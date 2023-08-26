@@ -17,6 +17,12 @@ jobs:
         run: dotnet build -c Release
       - name: Test
         run: dotnet test -c Release --no-build --collect:"XPlat Code Coverage;Format=lcov"
+      - name: Get path to lcov file
+        id: get_lcov_path
+        shell: bash
+        run: printf '::set-output name=lcov_path::%s\n' TestResults/*/coverage.info
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2
+        with:
+          path-to-lcov: ${{ steps.get_lcov_path.outputs.lcov_path }}
     
