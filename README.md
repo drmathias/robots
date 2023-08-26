@@ -19,7 +19,8 @@ Table of Contents
     
 # Overview
 
-![Continuous Integration Workflow](https://github.com/drmathias/robots/actions/workflows/ci.yml/badge.svg) ![Release Workflow](https://github.com/drmathias/robots/actions/workflows/release.yml/badge.svg)
+[![License](https://img.shields.io/github/license/drmathias/robots)](https://github.com/drmathias/robots/blob/main/LICENSE) [![Nuget](https://img.shields.io/nuget/v/Robots.Txt.Parser)](https://www.nuget.org/packages/Robots.Txt.Parser/) [![Continuous Integration Workflow](https://github.com/drmathias/robots/actions/workflows/ci.yml/badge.svg)](https://github.com/drmathias/robots/actions/workflows/ci.yml) [![Coverage Status](https://coveralls.io/repos/github/drmathias/robots/badge.svg?branch=main)](https://coveralls.io/github/drmathias/robots?branch=main)
+
 
 Parse _robots.txt_ and _sitemaps_ using dotnet.
 Supports the proposed [RFC9303](https://datatracker.ietf.org/doc/html/rfc9309#name-the-allow-and-disallow-line) standard, as well as the following common, non-standard directives:
