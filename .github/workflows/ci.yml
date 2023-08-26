@@ -24,5 +24,6 @@ jobs:
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2
         with:
-          path-to-lcov: ${{ steps.get_lcov_path.outputs.LCOVPATH }}
+          file: ${{ steps.get_lcov_path.outputs.LCOVPATH }}
+          format: lcov
     
