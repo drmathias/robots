@@ -16,7 +16,7 @@ jobs:
       - name: Build
         run: dotnet build -c Release
       - name: Test
-        run: dotnet test -c Release --no-build --collect:"XPlat Code Coverage"
+        run: dotnet test -c Release --no-build --collect:"XPlat Code Coverage;Format=lcov"
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2
     
