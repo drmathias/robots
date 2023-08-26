@@ -45,7 +45,7 @@ There is also the possibility to extend this library to support protocols other 
 | FTPS/FTPS | ❌ | 0.1 |
 | Wildcard (`*`) User-agent | ✔️ | |
 | Allow & disallow rules | ✔️ | |
-| End-of-match (`$`) and wildcard (`*`) paths | ❌ | 1.0 |
+| End-of-match (`$`) and wildcard (`*`) paths | ✔️ | |
 | Sitemap entries | ✔️ | |
 | Host directive | ✔️ | |
 | Crawl-delay directive | ✔️ | |

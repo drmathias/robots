@@ -72,6 +72,139 @@ Disallow: /
     }
 
     [Fact]
+    public async Task UserAgentWildcard_DisallowWildcardPath_DisallowOnMatch()
+    {
+        // Arrange
+        var file =
+@"User-agent: *
+Disallow: /some/*/path
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.Should().NotBe(null);
+        ruleChecker.IsAllowed("/some/other/sub/path").Should().Be(false);
+    }
+
+    [Fact]
+    public async Task UserAgentWildcard_DisallowDoubleWildcardPath_DisallowOnMatch()
+    {
+        // Arrange
+        var file =
+@"User-agent: *
+Disallow: /some/**/path
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.Should().NotBe(null);
+        ruleChecker.IsAllowed("/some/other/sub/path").Should().Be(false);
+    }
+
+    [Fact]
+    public async Task UserAgentWildcard_TwoPartWildcardPath_DisallowOnMatch()
+    {
+        // Arrange
+        var file =
+@"User-agent: *
+Disallow: /some/*/*/path
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.Should().NotBe(null);
+        ruleChecker.IsAllowed("/some/other/sub/path").Should().Be(false);
+    }
+
+    [Fact]
+    public async Task UserAgentWildcard_TwoPartWildcardPath_DisallowSubpathMatch()
+    {
+        // Arrange
+        var file =
+@"User-agent: *
+Disallow: /some/*/*/path
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.Should().NotBe(null);
+        ruleChecker.IsAllowed("/some/other/sub/path/end").Should().Be(false);
+    }
+
+    [Fact]
+    public async Task UserAgentWildcard_WildcardPathWithEndOfMatch_AllowSubpathMatch()
+    {
+        // Arrange
+        var file =
+@"User-agent: *
+Disallow: /some/*/*/path$
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.Should().NotBe(null);
+        ruleChecker.IsAllowed("/some/other/sub/path/end").Should().Be(true);
+    }
+
+    [Fact]
+    public async Task UserAgentWildcard_DisallowEndOfMatchPath_DisallowOnExactMatch()
+    {
+        // Arrange
+        var file =
+@"User-agent: *
+Disallow: /some/path$
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.Should().NotBe(null);
+        ruleChecker.IsAllowed("/some/path").Should().Be(false);
+    }
+
+    [Fact]
+    public async Task UserAgentWildcard_DisallowEndOfMatchPath_AllowOnSubPathMatch()
+    {
+        // Arrange
+        var file =
+@"User-agent: *
+Disallow: /some/path$
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.Should().NotBe(null);
+        ruleChecker.IsAllowed("/some/path/subdirectory").Should().Be(true);
+    }
+
+    [Fact]
     public async Task UserAgentWildcard_DisallowPath_DisallowOnSubpath()
     {
         // Arrange
@@ -404,6 +537,26 @@ Allow: /some/path
         robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(true);
+    }
+
+    [Fact]
+    public async Task UserAgentWildcard_DisallowAllAndAllowWildcardPath_AllowWildcardPathMatch()
+    {
+        // Arrange
+        var file =
+@"User-agent: *
+Disallow: /
+Allow: /some/*/path
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.Should().NotBe(null);
+        ruleChecker.IsAllowed("/some/other/sub/path").Should().Be(true);
     }
 
     [Fact]

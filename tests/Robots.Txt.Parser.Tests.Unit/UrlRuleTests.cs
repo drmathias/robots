@@ -12,7 +12,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "");
 
         // Act
-        var matches = urlRule.Matches("/some/path");
+        var matches = urlRule.Pattern.Matches("/some/path");
 
         // Assert
         matches.Should().Be(false);
@@ -25,7 +25,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path");
 
         // Act
-        var matches = urlRule.Matches("/some/other/path");
+        var matches = urlRule.Pattern.Matches("/some/other/path");
 
         // Assert
         matches.Should().Be(false);
@@ -38,7 +38,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path/");
 
         // Act
-        var matches = urlRule.Matches("/some/path");
+        var matches = urlRule.Pattern.Matches("/some/path");
 
         // Assert
         matches.Should().Be(false);
@@ -51,7 +51,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path");
 
         // Act
-        var matches = urlRule.Matches("/some/path");
+        var matches = urlRule.Pattern.Matches("/some/path");
 
         // Assert
         matches.Should().Be(true);
@@ -64,7 +64,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path");
 
         // Act
-        var matches = urlRule.Matches("/some/path.html");
+        var matches = urlRule.Pattern.Matches("/some/path.html");
 
         // Assert
         matches.Should().Be(true);
@@ -77,7 +77,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path");
 
         // Act
-        var matches = urlRule.Matches("/some/path/subdirectory");
+        var matches = urlRule.Pattern.Matches("/some/path/subdirectory");
 
         // Assert
         matches.Should().Be(true);
@@ -90,7 +90,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%3c");
 
         // Act
-        var matches = urlRule.Matches("/some/path%3c");
+        var matches = urlRule.Pattern.Matches("/some/path%3c");
 
         // Assert
         matches.Should().Be(true);
@@ -103,7 +103,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%3C");
 
         // Act
-        var matches = urlRule.Matches("/some/path%3C");
+        var matches = urlRule.Pattern.Matches("/some/path%3C");
 
         // Assert
         matches.Should().Be(true);
@@ -116,7 +116,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%3c");
 
         // Act
-        var matches = urlRule.Matches("/some/path%3C");
+        var matches = urlRule.Pattern.Matches("/some/path%3C");
 
         // Assert
         matches.Should().Be(true);
@@ -129,7 +129,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%3C");
 
         // Act
-        var matches = urlRule.Matches("/some/path%3c");
+        var matches = urlRule.Pattern.Matches("/some/path%3c");
 
         // Assert
         matches.Should().Be(true);
@@ -142,7 +142,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%2F");
 
         // Act
-        var matches = urlRule.Matches("/some/path%2F");
+        var matches = urlRule.Pattern.Matches("/some/path%2F");
 
         // Assert
         matches.Should().Be(true);
@@ -155,7 +155,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%2F");
 
         // Act
-        var matches = urlRule.Matches("/some/path/");
+        var matches = urlRule.Pattern.Matches("/some/path/");
 
         // Assert
         matches.Should().Be(false);
@@ -168,7 +168,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path/");
 
         // Act
-        var matches = urlRule.Matches("/some/path%2F");
+        var matches = urlRule.Pattern.Matches("/some/path%2F");
 
         // Assert
         matches.Should().Be(false);
@@ -181,7 +181,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%7e");
 
         // Act
-        var matches = urlRule.Matches("/some/path~");
+        var matches = urlRule.Pattern.Matches("/some/path~");
 
         // Assert
         matches.Should().Be(true);
@@ -194,7 +194,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path~");
 
         // Act
-        var matches = urlRule.Matches("/some/path%7e");
+        var matches = urlRule.Pattern.Matches("/some/path%7e");
 
         // Assert
         matches.Should().Be(true);
@@ -207,7 +207,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%7E");
 
         // Act
-        var matches = urlRule.Matches("/some/path~");
+        var matches = urlRule.Pattern.Matches("/some/path~");
 
         // Assert
         matches.Should().Be(true);
@@ -220,7 +220,7 @@ public class UrlRuleTests
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path~");
 
         // Act
-        var matches = urlRule.Matches("/some/path%7E");
+        var matches = urlRule.Pattern.Matches("/some/path%7E");
 
         // Assert
         matches.Should().Be(true);

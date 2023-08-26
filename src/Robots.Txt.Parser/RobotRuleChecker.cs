@@ -40,8 +40,8 @@ public class RobotRuleChecker : IRobotRuleChecker
             "The /robots.txt URL is always allowed"
         */
         if (_rules.Count == 0 || path == "/robots.txt") return true;
-        var ruleMatch = _rules.Where(rule => rule.Matches(path))
-                              .OrderByDescending(rule => rule.Path.Length)
+        var ruleMatch = _rules.Where(rule => rule.Pattern.Matches(path))
+                              .OrderByDescending(rule => rule.Pattern.Length)
                               .ThenBy(rule => rule.Type, new RuleTypeComparer())
                               .FirstOrDefault();
         return ruleMatch is null || ruleMatch.Type == RuleType.Allow;
