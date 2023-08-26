@@ -19,6 +19,8 @@ Table of Contents
     
 # Overview
 
+![Continuous Integration Workflow](https://github.com/drmathias/robots/actions/workflows/ci.yml/badge.svg) ![Release Workflow](https://github.com/drmathias/robots/actions/workflows/release.yml/badge.svg)
+
 Parse _robots.txt_ and _sitemaps_ using dotnet.
 Supports the proposed [RFC9303](https://datatracker.ietf.org/doc/html/rfc9309#name-the-allow-and-disallow-line) standard, as well as the following common, non-standard directives:
 
