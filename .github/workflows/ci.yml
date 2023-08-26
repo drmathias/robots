@@ -20,9 +20,9 @@ jobs:
       - name: Get path to lcov file
         id: get_lcov_path
         shell: bash
-        run: printf '::set-output name=lcov_path::%s\n' TestResults/*/coverage.info
+        run: echo "LCOVPATH=$(find . -iname 'coverage.info')" >> $GITHUB_OUTPUT
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2
         with:
-          path-to-lcov: ${{ steps.get_lcov_path.outputs.lcov_path }}
+          path-to-lcov: ${{ steps.get_lcov_path.outputs.LCOVPATH }}
     
