@@ -23,7 +23,7 @@ Table of Contents
 
 
 Parse _robots.txt_ and _sitemaps_ using dotnet.
-Supports the proposed [RFC9303](https://datatracker.ietf.org/doc/html/rfc9309#name-the-allow-and-disallow-line) standard, as well as the following common, non-standard directives:
+Supports the proposed [RFC9309](https://datatracker.ietf.org/doc/html/rfc9309#name-the-allow-and-disallow-line) standard, as well as the following common, non-standard directives:
 
 - Sitemap
 - Host
