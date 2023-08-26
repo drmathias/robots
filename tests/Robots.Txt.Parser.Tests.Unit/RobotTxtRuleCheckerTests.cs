@@ -555,6 +555,26 @@ Disallow: /some/path
     }
 
     [Fact]
+    public async Task MatchedUserAgent_BothDisallowAndAllowSamePath_PreferAllowRule()
+    {
+        // Arrange
+        var file =
+@"User-agent: SomeBot
+Disallow: /some/path
+Allow: /some/path
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.Should().NotBe(null);
+        ruleChecker.IsAllowed("/some/path").Should().Be(true);
+    }
+
+    [Fact]
     public async Task MatchedUserAgent_DisallowPathWrongCase_Allow()
     {
         // Arrange

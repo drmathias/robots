@@ -24,12 +24,19 @@ public class SitemapParser
     /// <exception cref="SitemapException">Thrown when the sitemap document is formatted incorrectly</exception>
     public static async Task<Sitemap> ReadFromStreamAsync(Stream stream, DateTime? modifiedSince = null, CancellationToken cancellationToken = default)
     {
-        var document = await XDocument.LoadAsync(stream, LoadOptions.None, cancellationToken);
-        var urlSetElement = document.Element(sitemapNamespace + "urlset");
-        if (urlSetElement is not null) return ReadUrlSet(urlSetElement, modifiedSince);
+        try
+        {
+            var document = await XDocument.LoadAsync(stream, LoadOptions.None, cancellationToken);
+            var urlSetElement = document.Element(sitemapNamespace + "urlset");
+            if (urlSetElement is not null) return ReadUrlSet(urlSetElement, modifiedSince);
 
-        var sitemapIndexElement = document.Element(sitemapNamespace + "sitemapindex");
-        if (sitemapIndexElement is not null) return ReadSitemapIndex(sitemapIndexElement, modifiedSince);
+            var sitemapIndexElement = document.Element(sitemapNamespace + "sitemapindex");
+            if (sitemapIndexElement is not null) return ReadSitemapIndex(sitemapIndexElement, modifiedSince);
+        }
+        catch (Exception e) when (e is not SitemapException)
+        {
+            throw new SitemapException("Unable to parse sitemap", e);
+        }
 
         throw new SitemapException("Unable to find root sitemap element");
     }
@@ -42,12 +49,7 @@ public class SitemapParser
             {
                 var location = new Uri(sitemapElement.Element(sitemapNamespace + "loc")!.Value);
                 var lastModifiedString = sitemapElement.Element(sitemapNamespace + "lastmod")?.Value;
-                DateTime? lastModified = null;
-                if (lastModifiedString is not null)
-                {
-                    if (DateTime.TryParse(lastModifiedString, out var parsedLastModified)) lastModified = parsedLastModified;
-                    else throw new SitemapException($"Could not parse last modified value {lastModifiedString} as date");
-                }
+                DateTime? lastModified = lastModifiedString is not null ? DateTime.Parse(lastModifiedString) : null;
                 return new SitemapItem(location, lastModified);
             })
             .Where(sitemap => modifiedSince is null || sitemap.LastModified is null || sitemap.LastModified >= modifiedSince)
@@ -66,25 +68,11 @@ public class SitemapParser
                 var lastModifiedString = urlElement.Element(sitemapNamespace + "lastmod")?.Value;
                 var changeFrequencyString = urlElement.Element(sitemapNamespace + "changefreq")?.Value;
                 var priorityString = urlElement.Element(sitemapNamespace + "priority")?.Value;
-                DateTime? lastModified = null;
-                if (lastModifiedString is not null)
-                {
-                    if (DateTime.TryParse(lastModifiedString, out var parsedLastModified)) lastModified = parsedLastModified;
-                    else throw new SitemapException($"Could not parse last modified value {lastModifiedString} as date");
-                }
-                ChangeFrequency? changeFrequency = null;
-                if (changeFrequencyString is not null)
-                {
-                    if (Enum.TryParse<ChangeFrequency>(changeFrequencyString, ignoreCase: true, out var parsedChangeFrequency))
-                        changeFrequency = parsedChangeFrequency;
-                    else throw new SitemapException($"Could not parse change frequency value {changeFrequencyString}");
-                }
-                decimal? priority = null;
-                if (priorityString is not null)
-                {
-                    if (decimal.TryParse(priorityString, out var parsedPriority)) priority = parsedPriority;
-                    else throw new SitemapException($"Could not parse priority value {priorityString} as decimal");
-                }
+                DateTime? lastModified = lastModifiedString is not null ? DateTime.Parse(lastModifiedString) : null;
+                ChangeFrequency? changeFrequency = changeFrequencyString is not null
+                    ? Enum.Parse<ChangeFrequency>(changeFrequencyString, ignoreCase: true)
+                    : null;
+                decimal? priority = priorityString is not null ? decimal.Parse(priorityString) : null;
                 return new UrlSetItem(location, lastModified, changeFrequency, priority);
             })
             .Where(url => modifiedSince is null || url.LastModified is null || url.LastModified >= modifiedSince)

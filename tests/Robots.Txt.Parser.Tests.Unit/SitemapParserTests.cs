@@ -10,21 +10,166 @@ namespace Robots.Txt.Parser.Tests.Unit;
 public class SitemapParserTests
 {
     [Fact]
+    public async Task ReadFromStreamAsync_ImproperXmlFormat_ThrowSitemapException()
+    {
+        // Arrange
+        var file =
+@"<?xml version=""1.0"" encoding=""UTF-8""?>
+<invalid xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
+    <sitemap>
+        <loc>https://www.github.com/organisations.xml</loc>
+        <lastmod>2023-08-23</lastmod>
+    </sitemap>
+</invalid>";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+
+        // Assert
+        await parse.Should().ThrowExactlyAsync<SitemapException>();
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_SitemapIndexIncorrectLocationFormat_ThrowSitemapException()
+    {
+        // Arrange
+        var file =
+@"<?xml version=""1.0"" encoding=""UTF-8""?>
+<sitemapindex xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
+    <sitemap>
+        <loc>invalid[/]location</loc>
+    </sitemap>
+</sitemapindex>";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+
+        // Assert
+        await parse.Should().ThrowExactlyAsync<SitemapException>();
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_SitemapIndexIncorrectDateFormat_ThrowSitemapException()
+    {
+        // Arrange
+        var file =
+@"<?xml version=""1.0"" encoding=""UTF-8""?>
+<sitemapindex xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
+    <sitemap>
+        <loc>https://www.github.com/organisations.xml</loc>
+        <lastmod>not-a-real-date</lastmod>
+    </sitemap>
+</sitemapindex>";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+
+        // Assert
+        await parse.Should().ThrowExactlyAsync<SitemapException>();
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_UrlSetIncorrectLocationFormat_ThrowSitemapException()
+    {
+        // Arrange
+        var file =
+@"<?xml version=""1.0"" encoding=""UTF-8""?>
+<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
+    <url>
+        <loc>invalid[/]location</loc>
+    </url>
+</urlset>";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+
+        // Assert
+        await parse.Should().ThrowExactlyAsync<SitemapException>();
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_UrlSetIncorrectDateFormat_ThrowSitemapException()
+    {
+        // Arrange
+        var file =
+@"<?xml version=""1.0"" encoding=""UTF-8""?>
+<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
+    <url>
+        <loc>https://www.github.com/organisations.xml</loc>
+        <lastmod>not-a-real-date</lastmod>
+    </url>
+</urlset>";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+
+        // Assert
+        await parse.Should().ThrowExactlyAsync<SitemapException>();
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_UrlSetIncorrectChangeFrequencyFormat_ThrowSitemapException()
+    {
+        // Arrange
+        var file =
+@"<?xml version=""1.0"" encoding=""UTF-8""?>
+<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
+    <url>
+        <loc>https://www.github.com/organisations.xml</loc>
+        <changfreq>1</changefreq>
+    </url>
+</urlset>";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+
+        // Assert
+        await parse.Should().ThrowExactlyAsync<SitemapException>();
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_UrlSetIncorrectPriorityFormat_ThrowSitemapException()
+    {
+        // Arrange
+        var file =
+@"<?xml version=""1.0"" encoding=""UTF-8""?>
+<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
+    <url>
+        <loc>https://www.github.com/organisations.xml</loc>
+        <priority>high</priority>
+    </url>
+</urlset>";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+
+        // Assert
+        await parse.Should().ThrowExactlyAsync<SitemapException>();
+    }
+
+    [Fact]
     public async Task ReadFromStreamAsync_SitemapIndexNoModifiedDateFilter_ParseCorrectly()
     {
         // Arrange
         var file =
 @"<?xml version=""1.0"" encoding=""UTF-8""?>
-        <sitemapindex xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
-            <sitemap>
-                <loc>https://www.github.com/organisations.xml</loc>
-                <lastmod>2023-08-23</lastmod>
-            </sitemap>
-            <sitemap>
-                <loc>https://www.github.com/people.xml</loc>
-                <lastmod>2023-10-01</lastmod>
-            </sitemap>
-        </sitemapindex>";
+<sitemapindex xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
+    <sitemap>
+        <loc>https://www.github.com/organisations.xml</loc>
+        <lastmod>2023-08-23</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>https://www.github.com/people.xml</loc>
+        <lastmod>2023-10-01</lastmod>
+    </sitemap>
+</sitemapindex>";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
