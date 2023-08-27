@@ -22,7 +22,7 @@ public interface IRobotsTxt
     /// <param name="userAgent">User-Agent header to retrieve rules for</param>
     /// <param name="crawlDelay">The crawl delay in seconds</param>
     /// <returns>True if a crawl delay directive exists; otherwise false</returns>
-    bool TryGetCrawlDelay(string userAgent, out int crawlDelay);
+    bool TryGetCrawlDelay(ProductToken userAgent, out int crawlDelay);
 
     /// <summary>
     /// Retrieves the website host
@@ -37,22 +37,22 @@ public interface IRobotsTxt
     /// <param name="userAgent">User-Agent header to retrieve rules for</param>
     /// <param name="ruleChecker">A rule checker for the User-Agent</param>
     /// <returns>True if any rules are found; otherwise false</returns>
-    bool TryGetRules(string userAgent, out IRobotRuleChecker ruleChecker);
+    bool TryGetRules(ProductToken userAgent, out IRobotRuleChecker ruleChecker);
 }
 
 public class RobotsTxt : IRobotsTxt
 {
     private readonly IRobotClient _client;
 
-    private readonly IReadOnlyDictionary<string, HashSet<UrlRule>> _userAgentRules;
-    private readonly IReadOnlyDictionary<string, int> _userAgentCrawlDirectives;
-    private readonly HashSet<string> _userAgents;
+    private readonly IReadOnlyDictionary<ProductToken, HashSet<UrlRule>> _userAgentRules;
+    private readonly IReadOnlyDictionary<ProductToken, int> _userAgentCrawlDirectives;
+    private readonly HashSet<ProductToken> _userAgents;
     private readonly string? _host;
     private readonly HashSet<Uri> _sitemapUrls;
 
     internal RobotsTxt(IRobotClient client,
-                       IReadOnlyDictionary<string, HashSet<UrlRule>> userAgentRules,
-                       IReadOnlyDictionary<string, int> userAgentCrawlDirectives,
+                       IReadOnlyDictionary<ProductToken, HashSet<UrlRule>> userAgentRules,
+                       IReadOnlyDictionary<ProductToken, int> userAgentCrawlDirectives,
                        string? host,
                        HashSet<Uri> sitemapUrls)
     {
@@ -71,13 +71,13 @@ public class RobotsTxt : IRobotsTxt
             : await _client.LoadSitemapsAsync(new[] { new Uri(_client.BaseAddress, "/sitemap.xml") }, modifiedSince, cancellationToken);
 
     /// <inheritdoc />
-    public bool TryGetCrawlDelay(string userAgent, out int crawlDelay)
+    public bool TryGetCrawlDelay(ProductToken userAgent, out int crawlDelay)
     {
         var userAgentMatch = _userAgentCrawlDirectives.TryGetValue(userAgent, out crawlDelay);
         if (!userAgentMatch)
         {
             if (_userAgents.Contains(userAgent)) return false;
-            return _userAgentCrawlDirectives.TryGetValue("*", out crawlDelay);
+            return _userAgentCrawlDirectives.TryGetValue(ProductToken.Wildcard, out crawlDelay);
         }
 
         return true;
@@ -91,9 +91,9 @@ public class RobotsTxt : IRobotsTxt
     }
 
     /// <inheritdoc />
-    public bool TryGetRules(string userAgent, out IRobotRuleChecker ruleChecker)
+    public bool TryGetRules(ProductToken userAgent, out IRobotRuleChecker ruleChecker)
     {
-        if (!_userAgentRules.TryGetValue(userAgent, out var rules) && !_userAgentRules.TryGetValue("*", out rules))
+        if (!_userAgentRules.TryGetValue(userAgent, out var rules) && !_userAgentRules.TryGetValue(ProductToken.Wildcard, out rules))
         {
             ruleChecker = new RobotRuleChecker(new HashSet<UrlRule>());
             return false;

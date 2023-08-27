@@ -58,7 +58,7 @@ public class RobotWebClient<TWebsite> : IRobotWebClient<TWebsite>
                 If a server status code indicates that the robots.txt file is unavailable to the crawler,
                 then the crawler MAY access any resources on the server.
             */
-            return new RobotsTxt(this, new Dictionary<string, HashSet<UrlRule>>(), new Dictionary<string, int>(), null, new HashSet<Uri>());
+            return new RobotsTxt(this, new Dictionary<ProductToken, HashSet<UrlRule>>(), new Dictionary<ProductToken, int>(), null, new HashSet<Uri>());
         }
 
         if (statusCodeNumber >= 500)
@@ -68,11 +68,11 @@ public class RobotWebClient<TWebsite> : IRobotWebClient<TWebsite>
                 crawler MUST assume complete disallow. For example, in the context of HTTP, server errors are identified by status codes in
                 the 500-599 range.
             */
-            var userAgentRules = new Dictionary<string, HashSet<UrlRule>>
+            var userAgentRules = new Dictionary<ProductToken, HashSet<UrlRule>>
             {
-                { "*", new HashSet<UrlRule> { new (RuleType.Disallow, "/") } }
+                { ProductToken.Wildcard, new HashSet<UrlRule> { new (RuleType.Disallow, "/") } }
             };
-            return new RobotsTxt(this, userAgentRules, new Dictionary<string, int>(), null, new HashSet<Uri>());
+            return new RobotsTxt(this, userAgentRules, new Dictionary<ProductToken, int>(), null, new HashSet<Uri>());
         }
 
         var stream = await response.Content.ReadAsStreamAsync(cancellationToken);

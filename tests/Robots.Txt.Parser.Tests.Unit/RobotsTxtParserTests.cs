@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.FileProviders;
@@ -45,5 +47,28 @@ public partial class RobotsTxtParserTests
 
         // Assert
         await parse.Should().ThrowAsync<OutOfMemoryException>();
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_InvalidProductToken_Ignore()
+    {
+        // Arrange
+        var file =
+@"User-agent: *
+Disallow: /
+
+User-agent: InvalidProductToken5
+Disallow: 
+
+User-agent: ValidProductToken
+Disallow: 
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.Should().NotBe(null);
     }
 }

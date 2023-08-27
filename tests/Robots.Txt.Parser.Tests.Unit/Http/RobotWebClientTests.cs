@@ -43,7 +43,7 @@ public class RobotWebClientTests
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        var hasRules = robotsTxt.TryGetRules("SomeBot", out var rules);
+        var hasRules = robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var rules);
         hasRules.Should().Be(true);
         rules.IsAllowed("/").Should().Be(false);
     }
@@ -67,7 +67,7 @@ public class RobotWebClientTests
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        var hasRules = robotsTxt.TryGetRules("SomeBot", out var rules);
+        var hasRules = robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var rules);
         hasRules.Should().Be(false);
         rules.IsAllowed("/").Should().Be(true);
     }

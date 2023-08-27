@@ -49,9 +49,9 @@ public class RobotsTxtParser
         /*
           Crawlers MUST use case-insensitive matching to find the group that matches the product token
         */
-        var currentUserAgents = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var userAgentRules = new Dictionary<string, HashSet<UrlRule>>(StringComparer.OrdinalIgnoreCase);
-        var userAgentCrawlDirectives = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var currentUserAgents = new HashSet<ProductToken>();
+        var userAgentRules = new Dictionary<ProductToken, HashSet<UrlRule>>();
+        var userAgentCrawlDirectives = new Dictionary<ProductToken, int>();
 
         /*
           The file MUST be UTF-8 encoded
@@ -67,9 +67,12 @@ public class RobotsTxtParser
             {
                 if (!previousLineWasUserAgent) currentUserAgents.Clear();
                 var currentUserAgent = GetValueOfDirective(line, UserAgentDirective);
-                currentUserAgents.Add(currentUserAgent);
-                userAgentRules.TryAdd(currentUserAgent, new HashSet<UrlRule>());
-                previousLineWasUserAgent = true;
+                if (ProductToken.TryParse(currentUserAgent, out var productToken))
+                {
+                    currentUserAgents.Add(productToken);
+                    userAgentRules.TryAdd(productToken, new HashSet<UrlRule>());
+                    previousLineWasUserAgent = true;
+                }
                 continue;
             }
 

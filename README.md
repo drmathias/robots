@@ -23,7 +23,7 @@ Table of Contents
 
 
 Parse _robots.txt_ and _sitemaps_ using dotnet.
-Supports the proposed [RFC9309](https://datatracker.ietf.org/doc/html/rfc9309#name-the-allow-and-disallow-line) standard, as well as the following common, non-standard directives:
+Supports the proposed [RFC9309](https://datatracker.ietf.org/doc/html/rfc9309) standard, as well as the following common, non-standard directives:
 
 - Sitemap
 - Host
@@ -145,8 +145,8 @@ var sitemap = await robotsTxt.LoadSitemapAsync(modifiedSince);
 
 ```csharp
 var robotsTxt = await robotWebClient.LoadRobotsTxtAsync();
-// if rules for the specific User-Agent are not present, it falls back to the wildcard *
-var anyRulesDefined = robotsTxt.TryGetRules("SomeBotUserAgent", out var rules);
+// if rules for the specific robot are not present, it falls back to the wildcard *
+var anyRulesDefined = robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var rules);
 // even if no wildcard rules exist, an empty rule-checker is returned
 var isAllowed = rules.IsAllowed("/some/path");
 ```
@@ -163,8 +163,9 @@ var hasHostDirective = robotsTxt.TryGetHost(out var host);
 
 ```csharp
 var robotsTxt = await robotWebClient.LoadRobotsTxtAsync();
+// if rules for the specific robot are not present, it falls back to the wildcard *
 // if no Crawl-delay directive exists, crawl delay will be 0
-var hasCrawlDelayDirective = robotsTxt.TryGetCrawlDelay(out var crawlDelay);
+var hasCrawlDelayDirective = robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay);
 ```
 
 # Contributing

@@ -23,7 +23,7 @@ Crawl-delay: 10
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        robotsTxt.TryGetCrawlDelay("SomeBot", out var crawlDelay).Should().Be(false);
+        robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(false);
         crawlDelay.Should().Be(0);
     }
 
@@ -42,7 +42,7 @@ Disallow:
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        robotsTxt.TryGetCrawlDelay("SomeBot", out var crawlDelay).Should().Be(false);
+        robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(false);
         crawlDelay.Should().Be(0);
     }
 
@@ -61,7 +61,7 @@ Crawl-delay: 10
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        robotsTxt.TryGetCrawlDelay("SomeBot", out var crawlDelay).Should().Be(true);
+        robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(true);
         crawlDelay.Should().Be(10);
     }
 
@@ -83,7 +83,7 @@ Disallow: /some/path
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        robotsTxt.TryGetCrawlDelay("SomeBot", out var crawlDelay).Should().Be(false);
+        robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(false);
         crawlDelay.Should().Be(0);
     }
 
@@ -105,7 +105,7 @@ Crawl-delay: 5
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        robotsTxt.TryGetCrawlDelay("SomeBot", out var crawlDelay).Should().Be(true);
+        robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(true);
         crawlDelay.Should().Be(5);
     }
 
@@ -128,7 +128,7 @@ Disallow: /some/path
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        robotsTxt.TryGetCrawlDelay("SomeBot", out var crawlDelay).Should().Be(false);
+        robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(false);
         crawlDelay.Should().Be(0);
     }
 
@@ -151,7 +151,7 @@ Crawl-delay: 5
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        robotsTxt.TryGetCrawlDelay("SomeBot", out var crawlDelay).Should().Be(true);
+        robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(true);
         crawlDelay.Should().Be(5);
     }
 }

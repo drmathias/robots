@@ -22,7 +22,7 @@ Disallow: /
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(true);
     }
@@ -44,7 +44,7 @@ Disallow: /
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/robots.txt").Should().Be(true);
     }
@@ -66,7 +66,7 @@ Disallow: /
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(false);
     }
@@ -85,7 +85,7 @@ Disallow: /some/*/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/other/sub/path").Should().Be(false);
     }
@@ -104,7 +104,7 @@ Disallow: /some/**/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/other/sub/path").Should().Be(false);
     }
@@ -123,7 +123,7 @@ Disallow: /some/*/*/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/other/sub/path").Should().Be(false);
     }
@@ -142,7 +142,7 @@ Disallow: /some/*/*/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/other/sub/path/end").Should().Be(false);
     }
@@ -161,7 +161,7 @@ Disallow: /some/*/*/path$
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/other/sub/path/end").Should().Be(true);
     }
@@ -180,7 +180,7 @@ Disallow: /some/path$
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(false);
     }
@@ -199,7 +199,7 @@ Disallow: /some/path$
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path/subdirectory").Should().Be(true);
     }
@@ -221,7 +221,7 @@ Disallow:
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path/subdirectory").Should().Be(false);
     }
@@ -243,7 +243,7 @@ Disallow:
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/other/path").Should().Be(true);
     }
@@ -265,7 +265,7 @@ Disallow:
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(true);
     }
@@ -287,7 +287,7 @@ Disallow: /
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/robots.txt").Should().Be(true);
     }
@@ -309,7 +309,7 @@ Disallow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(false);
     }
@@ -331,7 +331,7 @@ Disallow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path/subdirectory").Should().Be(false);
     }
@@ -353,7 +353,7 @@ Disallow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/other/path").Should().Be(true);
     }
@@ -376,7 +376,7 @@ Disallow:
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(true);
     }
@@ -399,7 +399,7 @@ Disallow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(false);
     }
@@ -422,7 +422,7 @@ Disallow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path/subdirectory").Should().Be(false);
     }
@@ -445,7 +445,7 @@ Disallow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/other/path").Should().Be(true);
     }
@@ -470,7 +470,7 @@ Disallow: /yet/another/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(false);
         ruleChecker.IsAllowed("/some/other/path").Should().Be(false);
@@ -494,7 +494,7 @@ Allow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(false);
     }
@@ -514,7 +514,7 @@ Allow: /some/other/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(false);
     }
@@ -534,7 +534,7 @@ Allow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(true);
     }
@@ -554,7 +554,7 @@ Allow: /some/*/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/other/sub/path").Should().Be(true);
     }
@@ -574,7 +574,7 @@ Allow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path/subdirectory").Should().Be(true);
     }
@@ -594,7 +594,7 @@ Disallow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(true);
     }
@@ -613,7 +613,7 @@ Disallow: /SoMe/paTh
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(true);
     }
@@ -636,7 +636,7 @@ Allow: /some/other/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(false);
     }
@@ -659,7 +659,7 @@ Allow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(true);
     }
@@ -682,7 +682,7 @@ Allow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path/subdirectory").Should().Be(true);
     }
@@ -702,7 +702,7 @@ Disallow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(true);
     }
@@ -722,7 +722,7 @@ Allow: /some/path
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(true);
     }
@@ -741,7 +741,7 @@ Disallow: /SoMe/paTh
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        robotsTxt.TryGetRules("SomeBot", out var ruleChecker);
+        robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var ruleChecker);
         robotsTxt.Should().NotBe(null);
         ruleChecker.IsAllowed("/some/path").Should().Be(true);
     }
