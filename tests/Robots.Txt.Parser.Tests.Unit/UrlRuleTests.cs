@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using FluentAssertions;
 using Xunit;
 
@@ -338,6 +340,45 @@ public class UrlRuleTests
 
         // Act
         var matches = urlRule.Pattern.Matches("/foo/bar?baz=https://foo.bar");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_ExistingEscapedUtf8Character_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/foo/bar/%E3%83%84");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/foo/bar/%E3%83%84");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_ExistingEscapedUtf8CharacterRuleOnly_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/foo/bar/ツ");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/foo/bar/%E3%83%84");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_ExistingEscapedUtf8CharacterPathOnly_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/foo/bar/%E3%83%84");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/foo/bar/ツ");
 
         // Assert
         matches.Should().Be(true);

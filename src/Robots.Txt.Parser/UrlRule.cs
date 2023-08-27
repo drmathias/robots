@@ -131,7 +131,8 @@ static class PathHelpers
 
             // if (character == '/' || _pChars.Value.Contains(character)) encodedUrlPathBuilder.Append(character);
             if (character == '/' || (char.IsAscii(character) && !_reservedChars.Contains(character))) encodedUrlPathBuilder.Append(character);
-            else encodedUrlPathBuilder.Append(Uri.HexEscape(character));
+            else encodedUrlPathBuilder.Append(PercentEncode(character));
+
         }
 
         if (pathAndTheRest.Length == 1) return encodedUrlPathBuilder.ToString();
@@ -158,10 +159,24 @@ static class PathHelpers
             }
 
             if (char.IsAscii(character) && !_reservedChars.Contains(character)) encodedUrlPathBuilder.Append(character);
-            else encodedUrlPathBuilder.Append(Uri.HexEscape(character));
+            else encodedUrlPathBuilder.Append(PercentEncode(character));
         }
 
         return encodedUrlPathBuilder.ToString();
+    }
+
+    private static string PercentEncode(char value)
+    {
+        var hexString = Convert.ToHexString(Encoding.UTF8.GetBytes(value.ToString()));
+        return string.Create(hexString.Length / 2 * 3, hexString, (chars, state) =>
+        {
+            var hexStringSpan = state.AsSpan();
+            for (var offset = 0; offset < chars.Length; offset += 3)
+            {
+                chars[offset] = '%';
+                hexStringSpan.Slice(offset / 3 * 2, 2).CopyTo(chars.Slice(offset + 1, 2));
+            }
+        });
     }
 
     private static string DecodePercentEncodedUnreservedCharacters(string value)
