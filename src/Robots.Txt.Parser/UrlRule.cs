@@ -20,6 +20,9 @@ public enum RuleType
     Allow, Disallow
 }
 
+/// <summary>
+/// Represents a URL path pattern in a robots.txt file
+/// </summary>
 public class UrlPathPattern
 {
     private readonly bool _matchSubPaths;
@@ -35,6 +38,9 @@ public class UrlPathPattern
                              .ToArray();
     }
 
+    /// <summary>
+    /// Length of the normalized URL path pattern
+    /// </summary>
     public int Length { get; }
 
     /// <summary>
@@ -42,7 +48,7 @@ public class UrlPathPattern
     /// </summary>
     /// <param name="path">The URL path</param>
     /// <returns>True if the path matches or is a sub-path; otherwise false</returns>
-    public bool Matches(UrlPath path)
+    public bool Matches(UriPath path)
     {
         if (Length == 0 || path._value.IndexOf(_patternParts[0]) != 0) return false;
         var currentIndex = _patternParts[0].Length;
@@ -58,15 +64,18 @@ public class UrlPathPattern
     public static implicit operator UrlPathPattern(string value) => new(value);
 }
 
-public class UrlPath
+/// <summary>
+/// A URI path that is normalized so that it can be compared with rules in a robots.txt file
+/// </summary>
+public class UriPath
 {
     internal readonly string _value;
 
-    private UrlPath(string value) => _value = PathHelpers.PreparePathForComparison(value);
+    private UriPath(string value) => _value = PathHelpers.PreparePathForComparison(value);
 
-    public int Length => _value.Length;
+    internal int Length => _value.Length;
 
-    public static implicit operator UrlPath(string value) => new(value);
+    public static implicit operator UriPath(string value) => new(value);
 }
 
 static class PathHelpers

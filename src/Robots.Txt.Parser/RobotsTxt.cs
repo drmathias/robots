@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Robots.Txt.Parser;
 
+/// <summary>
+/// A representation of the contained directives in a robots.txt file
+/// </summary>
 public interface IRobotsTxt
 {
     /// <summary>
@@ -40,6 +43,9 @@ public interface IRobotsTxt
     bool TryGetRules(ProductToken userAgent, out IRobotRuleChecker ruleChecker);
 }
 
+/// <summary>
+/// A representation of the contained directives in a robots.txt file
+/// </summary>
 public class RobotsTxt : IRobotsTxt
 {
     private readonly IRobotClient _client;

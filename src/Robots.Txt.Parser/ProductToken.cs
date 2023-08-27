@@ -15,6 +15,11 @@ public partial class ProductToken : IEquatable<string>, IEquatable<ProductToken>
 
     private ProductToken(string value) => _value = value;
 
+    /// <summary>
+    /// Parses a <see cref="ProductToken"/>
+    /// </summary>
+    /// <param name="value">Raw product token value</param>
+    /// <returns><see cref="ProductToken"/> that identifies a robot rule group</returns>
     public static ProductToken Parse(string value)
     {
         if (value != Wildcard._value && !ValidationPattern.IsMatch(value))
@@ -27,6 +32,12 @@ public partial class ProductToken : IEquatable<string>, IEquatable<ProductToken>
         return new ProductToken(value);
     }
 
+    /// <summary>
+    /// Attempts to parse a <see cref="ProductToken"/>
+    /// </summary>
+    /// <param name="value">Raw product token value</param>
+    /// <param name="productToken">Parsed product token, or wildcard if the token could not be parsed</param>
+    /// <returns>True if the <see cref="ProductToken"/> could be parsed; otherwise false</returns>
     public static bool TryParse(string value, out ProductToken productToken)
     {
         productToken = Wildcard;
@@ -71,5 +82,6 @@ public partial class ProductToken : IEquatable<string>, IEquatable<ProductToken>
     public bool Equals(ProductToken? other) =>
         other is not null && _value.Equals(other._value, StringComparison.InvariantCultureIgnoreCase);
 
+    /// <inheritdoc />
     public override int GetHashCode() => _value.ToUpperInvariant().GetHashCode();
 }
