@@ -84,7 +84,7 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_OctectBothLowercase_ReturnTrue()
+    public void Matches_PercentEncodedCharacterBothLowercase_ReturnTrue()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%3c");
@@ -97,7 +97,7 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_OctectBothUppercase_ReturnTrue()
+    public void Matches_PercentEncodedCharacterBothUppercase_ReturnTrue()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%3C");
@@ -110,7 +110,7 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_OctectRuleLowercasePathUppercase_ReturnTrue()
+    public void Matches_PercentEncodedCharacterRuleLowercasePathUppercase_ReturnTrue()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%3c");
@@ -123,7 +123,7 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_OctectRuleUppercasePathLowercase_ReturnTrue()
+    public void Matches_PercentEncodedCharacterRuleUppercasePathLowercase_ReturnTrue()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%3C");
@@ -136,7 +136,7 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_OctectForwardSlashBothUrl_ReturnTrue()
+    public void Matches_PercentEncodedCharacterForwardSlashBothUrl_ReturnTrue()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%2F");
@@ -149,7 +149,7 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_OctectForwardSlashOnlyInRule_ReturnFalse()
+    public void Matches_PercentEncodedCharacterForwardSlashOnlyInRule_ReturnFalse()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%2F");
@@ -162,7 +162,7 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_OctectForwardSlashOnlyInPath_ReturnFalse()
+    public void Matches_PercentEncodedCharacterForwardSlashOnlyInPath_ReturnFalse()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path/");
@@ -175,7 +175,85 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_OctectNotForwardSlashLowercaseOnlyInRule_ReturnTrue()
+    public void Matches_PercentEncodedCharacterAsteriskBothUrl_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/some%2Apath");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/some%2Apath");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_PercentEncodedCharacterAsteriskOnlyInRule_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/some%2Apath");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/some*path");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_PercentEncodedCharacterAsteriskOnlyInPath_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/some*path");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/some%2Apath");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_PercentEncodedCharacterReservedBothUrl_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/some%24path");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/some%24path");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_PercentEncodedCharacterReservedOnlyInRule_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/some%24path");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/some$path");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_PercentEncodedCharacterReservedOnlyInPath_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/some$path");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/some%24path");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_PercentEncodedCharacterNotSpecialLowercaseOnlyInRule_ReturnTrue()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%7e");
@@ -188,7 +266,7 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_OctectNotForwardSlashLowercaseOnlyInPath_ReturnTrue()
+    public void Matches_PercentEncodedCharacterNotSpecialLowercaseOnlyInPath_ReturnTrue()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path~");
@@ -201,7 +279,7 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_OctectNotForwardSlashUppercaseOnlyInRule_ReturnTrue()
+    public void Matches_PercentEncodedCharacterNotSpecialUppercaseOnlyInRule_ReturnTrue()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path%7E");
@@ -214,13 +292,52 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_OctectNotForwardSlashUppercaseOnlyInPath_ReturnTrue()
+    public void Matches_PercentEncodedCharacterNotSpecialUppercaseOnlyInPath_ReturnTrue()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/some/path~");
 
         // Act
         var matches = urlRule.Pattern.Matches("/some/path%7E");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_UnescapedQueryStringInRuleAndPath_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/foo/bar?baz=https://foo.bar");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/foo/bar?baz=https://foo.bar");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_UnescapedQueryStringInRuleButPathEscaped_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/foo/bar?baz=https://foo.bar");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/foo/bar?baz=https%3A%2F%2Ffoo.bar");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_UnescapedQueryStringInPathButRuleEscaped_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/foo/bar?baz=https%3A%2F%2Ffoo.bar");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/foo/bar?baz=https://foo.bar");
 
         // Assert
         matches.Should().Be(true);
