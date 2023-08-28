@@ -346,7 +346,20 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_ExistingEscapedUtf8Character_ReturnTrue()
+    public void Matches_ExistingUnencodedUtf8Character_ReturnTrue()
+    {
+        // Arrange
+        var urlRule = new UrlRule(RuleType.Disallow, "/foo/bar/ツ");
+
+        // Act
+        var matches = urlRule.Pattern.Matches("/foo/bar/ツ");
+
+        // Assert
+        matches.Should().Be(true);
+    }
+
+    [Fact]
+    public void Matches_ExistingEncodedUtf8Character_ReturnTrue()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/foo/bar/%E3%83%84");
@@ -359,7 +372,7 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_ExistingEscapedUtf8CharacterRuleOnly_ReturnTrue()
+    public void Matches_ExistingEncodedUtf8CharacterRuleOnly_ReturnTrue()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/foo/bar/ツ");
@@ -372,7 +385,7 @@ public class UrlRuleTests
     }
 
     [Fact]
-    public void Matches_ExistingEscapedUtf8CharacterPathOnly_ReturnTrue()
+    public void Matches_ExistingEncodedUtf8CharacterPathOnly_ReturnTrue()
     {
         // Arrange
         var urlRule = new UrlRule(RuleType.Disallow, "/foo/bar/%E3%83%84");

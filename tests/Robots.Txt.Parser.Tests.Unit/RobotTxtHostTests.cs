@@ -10,7 +10,7 @@ namespace Robots.Txt.Parser.Tests.Unit;
 public partial class RobotsTxtParserTests
 {
     [Fact]
-    public async Task ExtendedRobotsTxt_HostNotSpecified_ReturnFalse()
+    public async Task TryGetHost_HostNotSpecified_ReturnFalse()
     {
         // Arrange
         var file =
@@ -19,7 +19,7 @@ Disallow: /
 ";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
-        _robotsWebClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
+        _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -31,7 +31,7 @@ Disallow: /
     }
 
     [Fact]
-    public async Task ExtendedRobotsTxt_InvalidHostDirective_ReturnFalse()
+    public async Task TryGetHost_InvalidHostDirective_ReturnFalse()
     {
         // Arrange
         var file =
@@ -42,7 +42,7 @@ Disallow: /
 ";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
-        _robotsWebClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
+        _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -54,7 +54,7 @@ Disallow: /
     }
 
     [Fact]
-    public async Task ExtendedRobotsTxt_HostSpecified_ReturnTrue()
+    public async Task TryGetHost_HostSpecified_ReturnTrue()
     {
         // Arrange
         var file =
@@ -65,7 +65,7 @@ Disallow: /
 ";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
-        _robotsWebClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
+        _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -77,7 +77,30 @@ Disallow: /
     }
 
     [Fact]
-    public async Task ExtendedRobotsTxt_FullyQualifiedHostSpecified_ReturnTrue()
+    public async Task TryGetHost_NonStandardCaseHostSpecified_ReturnTrue()
+    {
+        // Arrange
+        var file =
+@"host: robots.github.com
+
+User-agent: *
+Disallow: /
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.Should().NotBe(null);
+        robotsTxt.TryGetHost(out var host).Should().Be(true);
+        host.Should().Be("robots.github.com");
+    }
+
+    [Fact]
+    public async Task TryGetHost_FullyQualifiedHostSpecified_ReturnTrue()
     {
         // Arrange
         var file =
@@ -88,7 +111,7 @@ Disallow: /
 ";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
-        _robotsWebClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
+        _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);

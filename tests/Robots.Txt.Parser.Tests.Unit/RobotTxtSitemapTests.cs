@@ -14,59 +14,7 @@ namespace Robots.Txt.Parser.Tests.Unit;
 public partial class RobotsTxtParserTests
 {
     [Fact]
-    public async Task OriginalRobotsTxt_Basic()
-    {
-        // Arrange
-        var file =
-@"User-agent: *
-Disallow: /
-";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
-
-        // Act
-        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
-
-        // Assert
-        robotsTxt.Should().NotBe(null);
-    }
-
-    [Fact]
-    public async Task OriginalRobotsTxt_WithLineComments_CommentsIgnored()
-    {
-        // Arrange
-        var file =
-@"# This is a basic robots.txt file
-User-agent: *
-Disallow: /
-";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
-
-        // Act
-        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
-
-        // Assert
-        robotsTxt.Should().NotBe(null);
-    }
-
-    [Fact]
-    public async Task OriginalRobotsTxt_WithEndOfLineComments_CommentsIgnored()
-    {
-        // Arrange
-        var file =
-@"User-agent: * # This line specifies any user agent
-Disallow: / # Directs the crawler to ignore the entire website
-";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
-
-        // Act
-        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
-
-        // Assert
-        robotsTxt.Should().NotBe(null);
-    }
-
-    [Fact]
-    public async Task ExtendedRobotsTxt_LoadSitemapAsync_LoadSitemapDirective()
+    public async Task LoadSitemapAsync_SitemapDirectiveExists_LoadSitemapDirective()
     {
         // Arrange
         var file =
@@ -83,14 +31,14 @@ Disallow: /
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        _robotsWebClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
+        _robotsClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
             It.Is<IEnumerable<Uri>>(uris => uris.SequenceEqual(new[] { new Uri("https://www.github.com/sitemap.xml") })),
             null,
             default), Times.Once);
     }
 
     [Fact]
-    public async Task ExtendedRobotsTxt_LoadSitemapAsync_LoadMultipleUniqueSitemapDirectives()
+    public async Task LoadSitemapAsync_MultipleSitemapDirectives_LoadMultipleUniqueSitemapDirectives()
     {
         // Arrange
         var file =
@@ -108,7 +56,7 @@ Disallow: /
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        _robotsWebClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
+        _robotsClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
             It.Is<IEnumerable<Uri>>(uris => uris.SequenceEqual(new[]
             {
                 new Uri("https://www.github.com/sitemap.xml"),
@@ -119,7 +67,7 @@ Disallow: /
     }
 
     [Fact]
-    public async Task ExtendedRobotsTxt_LoadSitemapAsync_RetrieveOneIfDuplicateSitemapDirectives()
+    public async Task LoadSitemapAsync_MultipleSitemapDirectives_RetrieveOneIfDuplicateSitemapDirectives()
     {
         // Arrange
         var file =
@@ -137,7 +85,7 @@ Disallow: /
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        _robotsWebClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
+        _robotsClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
             It.Is<IEnumerable<Uri>>(uris => uris.SequenceEqual(new[]
             {
                 new Uri("https://www.github.com/sitemap.xml"),
@@ -147,7 +95,7 @@ Disallow: /
     }
 
     [Fact]
-    public async Task ExtendedRobotsTxt_LoadSitemapAsync_PassModifiedDate()
+    public async Task LoadSitemapAsync_SitemapDirectiveExists_PassModifiedDate()
     {
         // Arrange
         var file =
@@ -166,14 +114,14 @@ Disallow: /
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        _robotsWebClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
+        _robotsClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
             It.IsAny<IEnumerable<Uri>>(),
             modifiedDate,
             default), Times.Once);
     }
 
     [Fact]
-    public async Task ExtendedRobotsTxt_LoadSitemapAsync_PassCancellationToken()
+    public async Task LoadSitemapAsync_SitemapDirectiveExists_PassCancellationToken()
     {
         // Arrange
         var file =
@@ -193,14 +141,14 @@ Disallow: /
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        _robotsWebClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
+        _robotsClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
             It.IsAny<IEnumerable<Uri>>(),
             null,
             cancellationToken), Times.Once);
     }
 
     [Fact]
-    public async Task StandardRobotsTxt_LoadSitemapAsync_TryLoadDefaultSitemapIfNoneSpecified()
+    public async Task LoadSitemapAsync_NoSitemapDirective_TryLoadDefaultSitemapIfNoneSpecified()
     {
         // Arrange
         var file =
@@ -210,7 +158,7 @@ Disallow: /
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         var baseAddress = new Uri("https://github.com");
-        _robotsWebClientMock.Setup(callTo => callTo.BaseAddress).Returns(baseAddress);
+        _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(baseAddress);
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -218,7 +166,7 @@ Disallow: /
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        _robotsWebClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
+        _robotsClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
             It.Is<IEnumerable<Uri>>(uris => uris.SequenceEqual(new[]
             {
                 new Uri("https://github.com/sitemap.xml"),
@@ -228,7 +176,7 @@ Disallow: /
     }
 
     [Fact]
-    public async Task StandardRobotsTxt_LoadSitemapAsync_PassModifiedDate()
+    public async Task LoadSitemapAsync_NoSitemapDirective_PassModifiedDate()
     {
         // Arrange
         var file =
@@ -237,7 +185,7 @@ Disallow: /
 ";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
-        _robotsWebClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://github.com"));
+        _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://github.com"));
 
         var modifiedDate = new DateTime(2023, 01, 01);
 
@@ -247,14 +195,14 @@ Disallow: /
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        _robotsWebClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
+        _robotsClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
             It.IsAny<IEnumerable<Uri>>(),
             modifiedDate,
             default), Times.Once);
     }
 
     [Fact]
-    public async Task StandardRobotsTxt_LoadSitemapAsync_PassCancellationToken()
+    public async Task LoadSitemapAsync_NoSitemapDirective_PassCancellationToken()
     {
         // Arrange
         var file =
@@ -263,7 +211,7 @@ Disallow: /
 ";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
-        _robotsWebClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://github.com"));
+        _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://github.com"));
 
         using var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
@@ -274,7 +222,7 @@ Disallow: /
 
         // Assert
         robotsTxt.Should().NotBe(null);
-        _robotsWebClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
+        _robotsClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
             It.IsAny<IEnumerable<Uri>>(),
             null,
             cancellationToken), Times.Once);

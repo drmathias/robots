@@ -12,13 +12,62 @@ namespace Robots.Txt.Parser.Tests.Unit;
 
 public partial class RobotsTxtParserTests
 {
-    private readonly Mock<IRobotClient> _robotsWebClientMock;
+    private readonly Mock<IRobotClient> _robotsClientMock;
     private readonly RobotsTxtParser _parser;
 
     public RobotsTxtParserTests()
     {
-        _robotsWebClientMock = new Mock<IRobotClient>();
-        _parser = new RobotsTxtParser(_robotsWebClientMock.Object);
+        _robotsClientMock = new Mock<IRobotClient>();
+        _parser = new RobotsTxtParser(_robotsClientMock.Object);
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_EmptyFile_LoadDefault()
+    {
+        // Arrange
+        var file = "";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.Should().NotBe(null);
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_WithLineComments_CommentsIgnored()
+    {
+        // Arrange
+        var file =
+@"# This is a basic robots.txt file
+User-agent: *
+Disallow: /
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.Should().NotBe(null);
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_WithEndOfLineComments_CommentsIgnored()
+    {
+        // Arrange
+        var file =
+@"User-agent: * # This line specifies any user agent
+Disallow: / # Directs the crawler to ignore the entire website
+";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Assert
+        robotsTxt.Should().NotBe(null);
     }
 
     [Fact]

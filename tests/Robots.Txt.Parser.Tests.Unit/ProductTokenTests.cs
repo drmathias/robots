@@ -142,6 +142,23 @@ public class ProductTokenTests
     }
 
     [Fact]
+    public void Equals_Null_NotEqual()
+    {
+        // Arrange
+        var a = ProductToken.Wildcard;
+
+        // Act
+        var isEqualProductToken = a.Equals((ProductToken?)null);
+        var isEqualString = a.Equals((string?)null);
+        var isEqualObject = a.Equals((object?)null);
+
+        // Assert
+        isEqualProductToken.Should().Be(false);
+        isEqualString.Should().Be(false);
+        isEqualObject.Should().Be(false);
+    }
+
+    [Fact]
     public void Equals_SpecificTokenAndWildcard_NotEqual()
     {
         // Arrange
