@@ -49,12 +49,11 @@ There is also the possibility to extend this library to support protocols other 
 | Sitemap entries | ✔️ | |
 | Host directive | ✔️ | |
 | Crawl-delay directive | ✔️ | |
-| Sitemaps XML format | ✔️ | |
 | RSS 2.0 feeds | ❌ | 0.8 |
 | Atom 0.3/1.0 feeds | ❌ | 0.8 |
-| Simple text sitemaps | ❌ | 0.5 |
-| Memory management (500 KiB parsing limit) | ✔️ | |
-| Caching support | ❌ | 0.3 |
+| Sitemaps XML format | ✔️ | |
+| Simple text sitemaps | ✔️ | |
+| Memory management | ✔️ | |
 
 # Usage
 

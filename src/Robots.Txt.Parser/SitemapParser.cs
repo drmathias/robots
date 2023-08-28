@@ -8,7 +8,7 @@ using System.Xml.Linq;
 namespace Robots.Txt.Parser;
 
 /// <summary>
-/// Parses a <see cref="Sitemap"/> document
+/// Parses a <see cref="Sitemap"/> XML document
 /// </summary>
 public class SitemapParser
 {
@@ -21,7 +21,7 @@ public class SitemapParser
     /// <param name="modifiedSince">Filters the sitemap on the modified date</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The parsed <see cref="Sitemap"/></returns>
-    /// <exception cref="SitemapException">Thrown when the sitemap document is formatted incorrectly</exception>
+    /// <exception cref="SitemapException">Raised when there is an error parsing the Sitemap</exception>
     public static async Task<Sitemap> ReadFromStreamAsync(Stream stream, DateTime? modifiedSince = null, CancellationToken cancellationToken = default)
     {
         try

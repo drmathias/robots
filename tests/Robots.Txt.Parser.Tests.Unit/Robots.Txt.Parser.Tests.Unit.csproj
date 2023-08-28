@@ -25,8 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="over-50kib-robots.txt" />
-    <EmbeddedResource Include="under-50kib-robots.txt" />
+    <EmbeddedResource Include="over-500kib-robots.txt" />
+    <EmbeddedResource Include="exactly-500kib-robots.txt" />
+    <EmbeddedResource Include="over-50k-lines-sitemap.txt" />
+    <EmbeddedResource Include="exactly-50k-lines-sitemap.txt" />
+    <EmbeddedResource Include="over-50mib-sitemap.txt" />
+    <EmbeddedResource Include="exactly-50mib-sitemap.txt" />
   </ItemGroup>
 
   <ItemGroup>

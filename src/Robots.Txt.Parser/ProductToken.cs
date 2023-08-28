@@ -20,6 +20,7 @@ public partial class ProductToken : IEquatable<string>, IEquatable<ProductToken>
     /// </summary>
     /// <param name="value">Raw product token value</param>
     /// <returns><see cref="ProductToken"/> that identifies a robot rule group</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Product token is formatted incorrectly</exception>
     public static ProductToken Parse(string value)
     {
         if (value != Wildcard._value && !ValidationPattern.IsMatch(value))

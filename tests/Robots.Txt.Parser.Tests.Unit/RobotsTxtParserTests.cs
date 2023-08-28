@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -71,11 +70,11 @@ Disallow: / # Directs the crawler to ignore the entire website
     }
 
     [Fact]
-    public async Task ReadFromStreamAsync_Under50KiB_DoNotThrow()
+    public async Task ReadFromStreamAsync_Exactly500KiB_DoNotThrow()
     {
         // Arrange
         var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
-        var stream = fileProvider.GetFileInfo("under-50kib-robots.txt").CreateReadStream();
+        var stream = fileProvider.GetFileInfo("exactly-500kib-robots.txt").CreateReadStream();
 
         // Act
         var parse = async () => await _parser.ReadFromStreamAsync(stream);
@@ -85,17 +84,17 @@ Disallow: / # Directs the crawler to ignore the entire website
     }
 
     [Fact]
-    public async Task ReadFromStreamAsync_Over50KiB_ThrowOutOfMemoryException()
+    public async Task ReadFromStreamAsync_Over500KiB_ThrowRobotsTxtException()
     {
         // Arrange
         var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
-        var stream = fileProvider.GetFileInfo("over-50kib-robots.txt").CreateReadStream();
+        var stream = fileProvider.GetFileInfo("over-500kib-robots.txt").CreateReadStream();
 
         // Act
         var parse = async () => await _parser.ReadFromStreamAsync(stream);
 
         // Assert
-        await parse.Should().ThrowAsync<OutOfMemoryException>();
+        await parse.Should().ThrowAsync<RobotsTxtException>();
     }
 
     [Fact]

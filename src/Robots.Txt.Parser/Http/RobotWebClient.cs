@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -86,11 +87,17 @@ public class RobotWebClient<TWebsite> : IRobotWebClient<TWebsite>
         foreach (var uri in uris)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            request.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml,*/*");
+            request.Headers.Add("Accept", "application/xml,text/plain,text/xml,*/*");
             var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             if (!response.IsSuccessStatusCode) return null;
             using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            var parsedSitemap = await SitemapParser.ReadFromStreamAsync(stream, modifiedSince, cancellationToken);
+
+            var parsedSitemap = response.Content.Headers.ContentType?.MediaType switch
+            {
+                MediaTypeNames.Text.Plain => await SimpleTextSitemapParser.ReadFromStreamAsync(stream, cancellationToken),
+                MediaTypeNames.Text.Xml or MediaTypeNames.Application.Xml or _
+                    => await SitemapParser.ReadFromStreamAsync(stream, modifiedSince, cancellationToken)
+            };
 
             if (parsedSitemap is null)
             {
