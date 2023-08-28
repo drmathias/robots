@@ -10,6 +10,20 @@ namespace Robots.Txt.Parser.Tests.Unit;
 public class SitemapParserTests
 {
     [Fact]
+    public async Task ReadFromStreamAsync_EmptyFile_ThrowSitemapException()
+    {
+        // Arrange
+        var file = @"";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        // Act
+        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+
+        // Assert
+        await parse.Should().ThrowExactlyAsync<SitemapException>();
+    }
+
+    [Fact]
     public async Task ReadFromStreamAsync_ImproperXmlFormat_ThrowSitemapException()
     {
         // Arrange
@@ -176,7 +190,7 @@ public class SitemapParserTests
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream);
 
         // Assert
-        var sitemapRoot = sitemap.Should().BeOfType<SitemapRoot>().Subject;
+        var sitemapRoot = sitemap.Should().BeOfType<SitemapIndex>().Subject;
         sitemap.UrlSet.Should().BeEmpty();
         sitemapRoot.SitemapUris.Should().BeEquivalentTo(new[]
         {
@@ -207,7 +221,7 @@ public class SitemapParserTests
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream, new DateTime(2023, 08, 22));
 
         // Assert
-        var sitemapRoot = sitemap.Should().BeOfType<SitemapRoot>().Subject;
+        var sitemapRoot = sitemap.Should().BeOfType<SitemapIndex>().Subject;
         sitemap.UrlSet.Should().BeEmpty();
         sitemapRoot.SitemapUris.Should().BeEquivalentTo(new[]
         {
@@ -238,7 +252,7 @@ public class SitemapParserTests
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream, new DateTime(2023, 08, 23));
 
         // Assert
-        var sitemapRoot = sitemap.Should().BeOfType<SitemapRoot>().Subject;
+        var sitemapRoot = sitemap.Should().BeOfType<SitemapIndex>().Subject;
         sitemap.UrlSet.Should().BeEmpty();
         sitemapRoot.SitemapUris.Should().BeEquivalentTo(new[]
         {
@@ -269,7 +283,7 @@ public class SitemapParserTests
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream, new DateTime(2023, 08, 24));
 
         // Assert
-        var sitemapRoot = sitemap.Should().BeOfType<SitemapRoot>().Subject;
+        var sitemapRoot = sitemap.Should().BeOfType<SitemapIndex>().Subject;
         sitemap.UrlSet.Should().BeEmpty();
         sitemapRoot.SitemapUris.Should().BeEquivalentTo(new[] { new Uri("https://www.github.com/people.xml") });
     }

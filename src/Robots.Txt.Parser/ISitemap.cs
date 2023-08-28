@@ -34,9 +34,9 @@ public class Sitemap : ISitemap
     }
 }
 
-internal class SitemapRoot : Sitemap
+internal class SitemapIndex : Sitemap
 {
-    public SitemapRoot(HashSet<Uri> sitemapUris) : base(new HashSet<UrlSetItem>())
+    public SitemapIndex(HashSet<Uri> sitemapUris) : base(new HashSet<UrlSetItem>())
     {
         SitemapUris = sitemapUris;
     }

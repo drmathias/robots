@@ -110,7 +110,7 @@ public class RobotWebClient<TWebsite> : IRobotWebClient<TWebsite>
                 continue;
             }
 
-            if (parsedSitemap is SitemapRoot sitemapRoot)
+            if (parsedSitemap is SitemapIndex sitemapRoot)
             {
                 var sitemaps = await (this as IRobotWebClient).LoadSitemapsAsync(sitemapRoot.SitemapUris, modifiedSince, cancellationToken);
                 if (sitemaps is not null) sitemap = sitemaps.Combine(sitemaps);

@@ -40,7 +40,7 @@ There is also the possibility to extend this library to support protocols other 
 # Features
 
 | Name | Supported | Priority |
-|------|-----------|---------|
+|------|-----------|----------|
 | HTTP/HTTPS | ✔️ | |
 | FTPS/FTPS | ❌ | 0.1 |
 | Wildcard (`*`) User-agent | ✔️ | |

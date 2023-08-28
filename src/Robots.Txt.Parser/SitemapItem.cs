@@ -2,16 +2,47 @@ using System;
 
 namespace Robots.Txt.Parser;
 
+public record SitemapItem
+{
+    internal SitemapItem(Uri Location, DateTime? LastModified)
+    {
+        this.Location = Location;
+        this.LastModified = LastModified;
+    }
+
+    /// <summary>
+    /// URL location
+    /// </summary>
+    public Uri Location { get; }
+
+    /// <summary>
+    /// Date and time that the contents of the URL was last modified
+    /// </summary>
+    public DateTime? LastModified { get; }
+}
+
 /// <summary>
 /// Url item described in a sitemap
 /// </summary>
-/// <param name="Location">URL location</param>
-/// <param name="LastModified">Date that the contents of the URL was last modified</param>
-/// <param name="ChangeFrequency">Hint for how often the URL is expected to change</param>
-/// <param name="Priority">Hint for the priority that should be assigned to the URL</param>
-public record UrlSetItem(Uri Location, DateTime? LastModified, ChangeFrequency? ChangeFrequency, decimal? Priority);
+public record UrlSetItem : SitemapItem
+{
+    internal UrlSetItem(Uri location, DateTime? lastModified, ChangeFrequency? changeFrequency, decimal? priority)
+        : base(location, lastModified)
+    {
+        ChangeFrequency = changeFrequency;
+        Priority = priority;
+    }
 
-internal record SitemapItem(Uri Location, DateTime? LastModified);
+    /// <summary>
+    /// Hint for how often the URL is expected to change
+    /// </summary>
+    public ChangeFrequency? ChangeFrequency { get; }
+
+    /// <summary>
+    /// Hint for the priority that should be assigned to the URL
+    /// </summary>
+    public decimal? Priority { get; }
+}
 
 /// <summary>
 /// Change frequency values used in the sitemap specification
