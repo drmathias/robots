@@ -25,7 +25,7 @@ public partial class RobotsTxtParserTests
     {
         // Arrange
         var file = "";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -43,7 +43,7 @@ public partial class RobotsTxtParserTests
 User-agent: *
 Disallow: /
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -60,7 +60,7 @@ Disallow: /
 @"User-agent: * # This line specifies any user agent
 Disallow: / # Directs the crawler to ignore the entire website
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -74,7 +74,7 @@ Disallow: / # Directs the crawler to ignore the entire website
     {
         // Arrange
         var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
-        var stream = fileProvider.GetFileInfo("exactly-500kib-robots.txt").CreateReadStream();
+        await using var stream = fileProvider.GetFileInfo("exactly-500kib-robots.txt").CreateReadStream();
 
         // Act
         var parse = async () => await _parser.ReadFromStreamAsync(stream);
@@ -88,7 +88,7 @@ Disallow: / # Directs the crawler to ignore the entire website
     {
         // Arrange
         var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
-        var stream = fileProvider.GetFileInfo("over-500kib-robots.txt").CreateReadStream();
+        await using var stream = fileProvider.GetFileInfo("over-500kib-robots.txt").CreateReadStream();
 
         // Act
         var parse = async () => await _parser.ReadFromStreamAsync(stream);
@@ -111,7 +111,7 @@ Disallow:
 User-agent: ValidProductToken
 Disallow: 
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);

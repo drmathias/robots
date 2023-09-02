@@ -19,5 +19,5 @@ public interface IRobotClient
     /// <exception cref="HttpRequestException">Thrown if a status code that cannot be handled is returned.</exception>
     Task<IRobotsTxt> LoadRobotsTxtAsync(CancellationToken cancellationToken = default);
 
-    protected internal Task<Sitemap?> LoadSitemapsAsync(IEnumerable<Uri> uris, DateTime? modifiedSince, CancellationToken cancellationToken);
+    protected internal IAsyncEnumerable<UrlSetItem> LoadSitemapsAsync(Uri uri, DateTime? modifiedSince = null, CancellationToken cancellationToken = default);
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Mime;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -76,49 +77,48 @@ public class RobotWebClient<TWebsite> : IRobotWebClient<TWebsite>
             return new RobotsTxt(this, userAgentRules, new Dictionary<ProductToken, int>(), null, new HashSet<Uri>());
         }
 
-        var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
         return await new RobotsTxtParser(this).ReadFromStreamAsync(stream, cancellationToken);
     }
 
-    async Task<Sitemap?> IRobotClient.LoadSitemapsAsync(IEnumerable<Uri> uris, DateTime? modifiedSince, CancellationToken cancellationToken)
+    async IAsyncEnumerable<UrlSetItem> IRobotClient.LoadSitemapsAsync(Uri uri, DateTime? modifiedSince, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        Sitemap? sitemap = null;
+        var request = new HttpRequestMessage(HttpMethod.Get, uri);
+        request.Headers.Add("Accept", "application/xml,text/plain,text/xml,*/*");
+        var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        if (!response.IsSuccessStatusCode) yield break;
 
-        foreach (var uri in uris)
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+
+        switch (response.Content.Headers.ContentType?.MediaType)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            request.Headers.Add("Accept", "application/xml,text/plain,text/xml,*/*");
-            var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-            if (!response.IsSuccessStatusCode) return null;
-            using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-
-            var parsedSitemap = response.Content.Headers.ContentType?.MediaType switch
-            {
-                MediaTypeNames.Text.Plain => await SimpleTextSitemapParser.ReadFromStreamAsync(stream, cancellationToken),
-                MediaTypeNames.Text.Xml or MediaTypeNames.Application.Xml or _
-                    => await SitemapParser.ReadFromStreamAsync(stream, modifiedSince, cancellationToken)
-            };
-
-            if (parsedSitemap is null)
-            {
-                continue;
-            }
-
-            if (sitemap is null)
-            {
-                sitemap = parsedSitemap;
-                continue;
-            }
-
-            if (parsedSitemap is SitemapIndex sitemapRoot)
-            {
-                var sitemaps = await (this as IRobotWebClient).LoadSitemapsAsync(sitemapRoot.SitemapUris, modifiedSince, cancellationToken);
-                if (sitemaps is not null) sitemap = sitemaps.Combine(sitemaps);
-            }
-
-            sitemap = sitemap.Combine(parsedSitemap);
+            case MediaTypeNames.Text.Plain:
+                await foreach (var urlSet in SimpleTextSitemapParser.ReadFromStreamAsync(stream, cancellationToken))
+                {
+                    yield return urlSet;
+                }
+                yield break;
+            case MediaTypeNames.Text.Xml or MediaTypeNames.Application.Xml:
+            default:
+                var sitemap = await SitemapParser.ReadFromStreamAsync(stream, modifiedSince, cancellationToken);
+                if (sitemap is SitemapIndex index)
+                {
+                    await foreach (var location in index.SitemapUris)
+                    {
+                        await foreach (var item in (this as IRobotClient).LoadSitemapsAsync(location, modifiedSince, cancellationToken))
+                        {
+                            yield return item;
+                        }
+                    }
+                }
+                else
+                {
+                    await foreach (var item in sitemap.UrlSet)
+                    {
+                        yield return item;
+                    }
+                }
+                yield break;
         }
-
-        return sitemap;
     }
 }

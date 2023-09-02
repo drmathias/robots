@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -14,7 +15,7 @@ public class SitemapParserTests
     {
         // Arrange
         var file = @"";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
@@ -35,7 +36,7 @@ public class SitemapParserTests
         <lastmod>2023-08-23</lastmod>
     </sitemap>
 </invalid>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
@@ -45,7 +46,7 @@ public class SitemapParserTests
     }
 
     [Fact]
-    public async Task ReadFromStreamAsync_SitemapIndexIncorrectLocationFormat_ThrowSitemapException()
+    public async Task ParseSitemapIndex_IncorrectLocationFormat_ThrowSitemapException()
     {
         // Arrange
         var file =
@@ -55,17 +56,18 @@ public class SitemapParserTests
         <loc>invalid[/]location</loc>
     </sitemap>
 </sitemapindex>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        var sitemap = (SitemapIndex)await SitemapParser.ReadFromStreamAsync(stream);
 
         // Act
-        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+        var parse = async () => await sitemap.SitemapUris.ToListAsync();
 
         // Assert
         await parse.Should().ThrowExactlyAsync<SitemapException>();
     }
 
     [Fact]
-    public async Task ReadFromStreamAsync_SitemapIndexIncorrectDateFormat_ThrowSitemapException()
+    public async Task ParseSitemapIndex_IncorrectDateFormat_ThrowSitemapException()
     {
         // Arrange
         var file =
@@ -76,17 +78,18 @@ public class SitemapParserTests
         <lastmod>not-a-real-date</lastmod>
     </sitemap>
 </sitemapindex>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        var sitemap = (SitemapIndex)await SitemapParser.ReadFromStreamAsync(stream);
 
         // Act
-        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+        var parse = async () => await sitemap.SitemapUris.ToListAsync();
 
         // Assert
         await parse.Should().ThrowExactlyAsync<SitemapException>();
     }
 
     [Fact]
-    public async Task ReadFromStreamAsync_UrlSetIncorrectLocationFormat_ThrowSitemapException()
+    public async Task ParseUrlSet_IncorrectLocationFormat_ThrowSitemapException()
     {
         // Arrange
         var file =
@@ -96,17 +99,18 @@ public class SitemapParserTests
         <loc>invalid[/]location</loc>
     </url>
 </urlset>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        var sitemap = await SitemapParser.ReadFromStreamAsync(stream);
 
         // Act
-        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+        var parse = async () => await sitemap.UrlSet.ToListAsync();
 
         // Assert
         await parse.Should().ThrowExactlyAsync<SitemapException>();
     }
 
     [Fact]
-    public async Task ReadFromStreamAsync_UrlSetIncorrectDateFormat_ThrowSitemapException()
+    public async Task ParseUrlSet_IncorrectDateFormat_ThrowSitemapException()
     {
         // Arrange
         var file =
@@ -117,17 +121,18 @@ public class SitemapParserTests
         <lastmod>not-a-real-date</lastmod>
     </url>
 </urlset>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        var sitemap = await SitemapParser.ReadFromStreamAsync(stream);
 
         // Act
-        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+        var parse = async () => await sitemap.UrlSet.ToListAsync();
 
         // Assert
         await parse.Should().ThrowExactlyAsync<SitemapException>();
     }
 
     [Fact]
-    public async Task ReadFromStreamAsync_UrlSetIncorrectChangeFrequencyFormat_ThrowSitemapException()
+    public async Task ParseUrlSet_IncorrectChangeFrequencyFormat_ThrowSitemapException()
     {
         // Arrange
         var file =
@@ -138,17 +143,18 @@ public class SitemapParserTests
         <changfreq>1</changefreq>
     </url>
 </urlset>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        var sitemap = await SitemapParser.ReadFromStreamAsync(stream);
 
         // Act
-        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+        var parse = async () => await sitemap.UrlSet.ToListAsync();
 
         // Assert
         await parse.Should().ThrowExactlyAsync<SitemapException>();
     }
 
     [Fact]
-    public async Task ReadFromStreamAsync_UrlSetIncorrectPriorityFormat_ThrowSitemapException()
+    public async Task ParseUrlSet_IncorrectPriorityFormat_ThrowSitemapException()
     {
         // Arrange
         var file =
@@ -159,10 +165,11 @@ public class SitemapParserTests
         <priority>high</priority>
     </url>
 </urlset>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        var sitemap = await SitemapParser.ReadFromStreamAsync(stream);
 
         // Act
-        var parse = async () => await SitemapParser.ReadFromStreamAsync(stream);
+        var parse = async () => await sitemap.UrlSet.ToListAsync();
 
         // Assert
         await parse.Should().ThrowExactlyAsync<SitemapException>();
@@ -184,15 +191,17 @@ public class SitemapParserTests
         <lastmod>2023-10-01</lastmod>
     </sitemap>
 </sitemapindex>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream);
 
         // Assert
         var sitemapRoot = sitemap.Should().BeOfType<SitemapIndex>().Subject;
-        sitemap.UrlSet.Should().BeEmpty();
-        sitemapRoot.SitemapUris.Should().BeEquivalentTo(new[]
+        var urlSet = await sitemap.UrlSet.ToListAsync();
+        var sitemapUris = await sitemapRoot.SitemapUris.ToListAsync();
+        urlSet.Should().BeEmpty();
+        sitemapUris.Should().BeEquivalentTo(new[]
         {
             new Uri("https://www.github.com/organisations.xml"),
             new Uri("https://www.github.com/people.xml"),
@@ -215,15 +224,17 @@ public class SitemapParserTests
         <lastmod>2023-10-01</lastmod>
     </sitemap>
 </sitemapindex>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream, new DateTime(2023, 08, 22));
 
         // Assert
         var sitemapRoot = sitemap.Should().BeOfType<SitemapIndex>().Subject;
-        sitemap.UrlSet.Should().BeEmpty();
-        sitemapRoot.SitemapUris.Should().BeEquivalentTo(new[]
+        var urlSet = await sitemap.UrlSet.ToListAsync();
+        var sitemapUris = await sitemapRoot.SitemapUris.ToListAsync();
+        urlSet.Should().BeEmpty();
+        sitemapUris.Should().BeEquivalentTo(new[]
         {
             new Uri("https://www.github.com/organisations.xml"),
             new Uri("https://www.github.com/people.xml"),
@@ -246,15 +257,17 @@ public class SitemapParserTests
         <lastmod>2023-10-01</lastmod>
     </sitemap>
 </sitemapindex>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream, new DateTime(2023, 08, 23));
 
         // Assert
         var sitemapRoot = sitemap.Should().BeOfType<SitemapIndex>().Subject;
-        sitemap.UrlSet.Should().BeEmpty();
-        sitemapRoot.SitemapUris.Should().BeEquivalentTo(new[]
+        var urlSet = await sitemap.UrlSet.ToListAsync();
+        var sitemapUris = await sitemapRoot.SitemapUris.ToListAsync();
+        urlSet.Should().BeEmpty();
+        sitemapUris.Should().BeEquivalentTo(new[]
         {
             new Uri("https://www.github.com/organisations.xml"),
             new Uri("https://www.github.com/people.xml"),
@@ -277,15 +290,17 @@ public class SitemapParserTests
         <lastmod>2023-10-01</lastmod>
     </sitemap>
 </sitemapindex>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream, new DateTime(2023, 08, 24));
 
         // Assert
         var sitemapRoot = sitemap.Should().BeOfType<SitemapIndex>().Subject;
-        sitemap.UrlSet.Should().BeEmpty();
-        sitemapRoot.SitemapUris.Should().BeEquivalentTo(new[] { new Uri("https://www.github.com/people.xml") });
+        var urlSet = await sitemap.UrlSet.ToListAsync();
+        var sitemapUris = await sitemapRoot.SitemapUris.ToListAsync();
+        urlSet.Should().BeEmpty();
+        sitemapUris.Should().BeEquivalentTo(new[] { new Uri("https://www.github.com/people.xml") });
     }
 
     [Fact]
@@ -302,13 +317,14 @@ public class SitemapParserTests
         <loc>https://www.github.com/drmathias/Robots.Txt.Parser</loc>
     </url>
 </urlset>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream);
 
         // Assert
-        sitemap.UrlSet.Should().BeEquivalentTo(new[]
+        var urlSet = await sitemap.UrlSet.ToListAsync();
+        urlSet.Should().BeEquivalentTo(new[]
         {
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  null, null, null),
             new UrlSetItem(new Uri("https://www.github.com/drmathias/Robots.Txt.Parser"), null, null, null),
@@ -329,13 +345,14 @@ public class SitemapParserTests
         <loc>https://www.github.com/drmathias/Robots.Txt.Parser</loc>
     </url>
 </urlset>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream, new DateTime(2024, 01, 01));
 
         // Assert
-        sitemap.UrlSet.Should().BeEquivalentTo(new[]
+        var urlSet = await sitemap.UrlSet.ToListAsync();
+        urlSet.Should().BeEquivalentTo(new[]
         {
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  null, null, null),
             new UrlSetItem(new Uri("https://www.github.com/drmathias/Robots.Txt.Parser"), null, null, null),
@@ -362,13 +379,14 @@ public class SitemapParserTests
         <priority>0.5</priority>
     </url>
 </urlset>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream);
 
         // Assert
-        sitemap.UrlSet.Should().BeEquivalentTo(new[]
+        var urlSet = await sitemap.UrlSet.ToListAsync();
+        urlSet.Should().BeEquivalentTo(new[]
         {
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  new DateTime(2023, 06, 01), ChangeFrequency.Daily, 0.8m),
             new UrlSetItem(new Uri("https://www.github.com/drmathias/Robots.Txt.Parser"), new DateTime(2023, 05, 12), ChangeFrequency.Monthly, 0.5m),
@@ -395,13 +413,14 @@ public class SitemapParserTests
         <priority>0.5</priority>
     </url>
 </urlset>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream, new DateTime(2023, 01, 01));
 
         // Assert
-        sitemap.UrlSet.Should().BeEquivalentTo(new[]
+        var urlSet = await sitemap.UrlSet.ToListAsync();
+        urlSet.Should().BeEquivalentTo(new[]
         {
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  new DateTime(2023, 06, 01), ChangeFrequency.Daily, 0.8m),
             new UrlSetItem(new Uri("https://www.github.com/drmathias/Robots.Txt.Parser"), new DateTime(2023, 05, 12), ChangeFrequency.Monthly, 0.5m),
@@ -428,13 +447,14 @@ public class SitemapParserTests
         <priority>0.5</priority>
     </url>
 </urlset>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream, new DateTime(2023, 05, 12));
 
         // Assert
-        sitemap.UrlSet.Should().BeEquivalentTo(new[]
+        var urlSet = await sitemap.UrlSet.ToListAsync();
+        urlSet.Should().BeEquivalentTo(new[]
         {
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  new DateTime(2023, 06, 01), ChangeFrequency.Daily, 0.8m),
             new UrlSetItem(new Uri("https://www.github.com/drmathias/Robots.Txt.Parser"), new DateTime(2023, 05, 12), ChangeFrequency.Monthly, 0.5m),
@@ -461,13 +481,14 @@ public class SitemapParserTests
         <priority>0.5</priority>
     </url>
 </urlset>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var sitemap = await SitemapParser.ReadFromStreamAsync(stream, new DateTime(2023, 05, 13));
 
         // Assert
-        sitemap.UrlSet.Should().BeEquivalentTo(new[]
+        var urlSet = await sitemap.UrlSet.ToListAsync();
+        urlSet.Should().BeEquivalentTo(new[]
         {
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  new DateTime(2023, 06, 01), ChangeFrequency.Daily, 0.8m),
         });

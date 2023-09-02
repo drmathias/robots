@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,14 +18,13 @@ public class SimpleTextSitemapParserTests
     {
         // Arrange
         var file = @"";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
-        var sitemap = await SimpleTextSitemapParser.ReadFromStreamAsync(stream);
+        var urlSet = await SimpleTextSitemapParser.ReadFromStreamAsync(stream).ToListAsync();
 
         // Assert
-        sitemap.Should().NotBe(null);
-        sitemap.UrlSet.Should().BeEmpty();
+        urlSet.Should().BeEmpty();
     }
 
     [Fact]
@@ -33,10 +33,10 @@ public class SimpleTextSitemapParserTests
         // Arrange
         var file =
 @"<?xml version=""1.0"" encoding=""UTF-8""?>";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
-        var parse = async () => await SimpleTextSitemapParser.ReadFromStreamAsync(stream);
+        var parse = async () => await SimpleTextSitemapParser.ReadFromStreamAsync(stream).ToListAsync();
 
         // Assert
         await parse.Should().ThrowAsync<SitemapException>();
@@ -47,10 +47,10 @@ public class SimpleTextSitemapParserTests
     {
         // Arrange
         var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
-        var stream = fileProvider.GetFileInfo("over-50k-lines-sitemap.txt").CreateReadStream();
+        await using var stream = fileProvider.GetFileInfo("over-50k-lines-sitemap.txt").CreateReadStream();
 
         // Act
-        var parse = async () => await SimpleTextSitemapParser.ReadFromStreamAsync(stream);
+        var parse = async () => await SimpleTextSitemapParser.ReadFromStreamAsync(stream).ToListAsync();
 
         // Assert
         await parse.Should().ThrowAsync<SitemapException>();
@@ -61,10 +61,10 @@ public class SimpleTextSitemapParserTests
     {
         // Arrange
         var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
-        var stream = fileProvider.GetFileInfo("exactly-50k-lines-sitemap.txt").CreateReadStream();
+        await using var stream = fileProvider.GetFileInfo("exactly-50k-lines-sitemap.txt").CreateReadStream();
 
         // Act
-        var parse = async () => await SimpleTextSitemapParser.ReadFromStreamAsync(stream);
+        var parse = async () => await SimpleTextSitemapParser.ReadFromStreamAsync(stream).ToListAsync();
 
         // Assert
         await parse.Should().NotThrowAsync();
@@ -75,10 +75,10 @@ public class SimpleTextSitemapParserTests
     {
         // Arrange
         var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
-        var stream = fileProvider.GetFileInfo("over-50mib-sitemap.txt").CreateReadStream();
+        await using var stream = fileProvider.GetFileInfo("over-50mib-sitemap.txt").CreateReadStream();
 
         // Act
-        var parse = async () => await SimpleTextSitemapParser.ReadFromStreamAsync(stream);
+        var parse = async () => await SimpleTextSitemapParser.ReadFromStreamAsync(stream).ToListAsync();
 
         // Assert
         await parse.Should().ThrowAsync<SitemapException>();
@@ -89,10 +89,10 @@ public class SimpleTextSitemapParserTests
     {
         // Arrange
         var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
-        var stream = fileProvider.GetFileInfo("exactly-50mib-sitemap.txt").CreateReadStream();
+        await using var stream = fileProvider.GetFileInfo("exactly-50mib-sitemap.txt").CreateReadStream();
 
         // Act
-        var parse = async () => await SimpleTextSitemapParser.ReadFromStreamAsync(stream);
+        var parse = async () => await SimpleTextSitemapParser.ReadFromStreamAsync(stream).ToListAsync();
 
         // Assert
         await parse.Should().NotThrowAsync();
@@ -104,14 +104,13 @@ public class SimpleTextSitemapParserTests
         // Arrange
         var file = @"https://github.com/organisations
 https://github.com/people";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
-        var sitemap = await SimpleTextSitemapParser.ReadFromStreamAsync(stream);
+        var urlSet = await SimpleTextSitemapParser.ReadFromStreamAsync(stream).ToListAsync();
 
         // Assert
-        sitemap.Should().NotBe(null);
-        sitemap.UrlSet.Should().BeEquivalentTo(new HashSet<UrlSetItem>
+        urlSet.Should().BeEquivalentTo(new HashSet<UrlSetItem>
         {
             new (new Uri("https://github.com/organisations"), null, null, null),
             new (new Uri("https://github.com/people"), null, null, null),
@@ -126,14 +125,13 @@ https://github.com/people";
 https://github.com/organisations
     
 https://github.com/people";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
-        var sitemap = await SimpleTextSitemapParser.ReadFromStreamAsync(stream);
+        var urlSet = await SimpleTextSitemapParser.ReadFromStreamAsync(stream).ToListAsync();
 
         // Assert
-        sitemap.Should().NotBe(null);
-        sitemap.UrlSet.Should().BeEquivalentTo(new HashSet<UrlSetItem>
+        urlSet.Should().BeEquivalentTo(new HashSet<UrlSetItem>
         {
             new (new Uri("https://github.com/organisations"), null, null, null),
             new (new Uri("https://github.com/people"), null, null, null),

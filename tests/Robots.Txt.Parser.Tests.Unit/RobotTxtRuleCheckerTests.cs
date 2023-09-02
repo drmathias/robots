@@ -16,7 +16,7 @@ public partial class RobotsTxtParserTests
 @"User-agent: AnotherBot
 Disallow: /
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -38,7 +38,7 @@ Disallow: /
 User-agent: AnotherBot
 Disallow: /
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -60,7 +60,7 @@ Disallow: /some/path
 User-agent: AnotherBot
 Disallow: /
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -79,7 +79,7 @@ Disallow: /
 @"User-agent: *
 Disallow: /some/*/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -98,7 +98,7 @@ Disallow: /some/*/path
 @"User-agent: *
 Disallow: /some/**/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -117,7 +117,7 @@ Disallow: /some/**/path
 @"User-agent: *
 Disallow: /some/*/*/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -136,7 +136,7 @@ Disallow: /some/*/*/path
 @"User-agent: *
 Disallow: /some/*/*/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -155,7 +155,7 @@ Disallow: /some/*/*/path
 @"User-agent: *
 Disallow: /some/*/*/path$
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -174,7 +174,7 @@ Disallow: /some/*/*/path$
 @"User-agent: *
 Disallow: /some/path$
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -193,7 +193,7 @@ Disallow: /some/path$
 @"User-agent: *
 Disallow: /some/path$
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -215,7 +215,7 @@ Disallow: /some/path
 User-agent: AnotherBot
 Disallow:
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -237,7 +237,7 @@ Disallow: /some/path
 User-agent: AnotherBot
 Disallow:
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -259,7 +259,7 @@ Disallow: /some/path
 User-agent: SomeBot
 Disallow: 
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -281,7 +281,7 @@ Disallow:
 User-agent: SomeBot
 Disallow: /
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -303,7 +303,7 @@ Disallow:
 User-agent: SomeBot
 Disallow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -325,7 +325,7 @@ Disallow:
 User-agent: SomeBot
 Disallow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -347,7 +347,7 @@ Disallow:
 User-agent: SomeBot
 Disallow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -370,7 +370,7 @@ User-agent: SomeBot
 User-agent: SomeOtherBot
 Disallow: 
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -393,7 +393,7 @@ User-agent: SomeBot
 User-agent: SomeOtherBot
 Disallow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -416,7 +416,7 @@ User-agent: SomeBot
 User-agent: SomeOtherBot
 Disallow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -439,7 +439,7 @@ User-agent: SomeBot
 User-agent: SomeOtherBot
 Disallow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -464,7 +464,7 @@ Disallow: /some/other/path
 User-agent: SomeBot
 Disallow: /yet/another/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -488,7 +488,7 @@ Disallow: /
 User-agent: AnotherBot
 Allow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -508,7 +508,7 @@ Allow: /some/path
 Disallow: /
 Allow: /some/other/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -528,7 +528,7 @@ Allow: /some/other/path
 Disallow: /
 Allow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -548,7 +548,7 @@ Allow: /some/path
 Disallow: /
 Allow: /some/*/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -568,7 +568,7 @@ Allow: /some/*/path
 Disallow: /
 Allow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -588,7 +588,7 @@ Allow: /some/path
 Allow: /some/path
 Disallow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -607,7 +607,7 @@ Disallow: /some/path
 @"User-agent: *
 Disallow: /SoMe/paTh
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -630,7 +630,7 @@ User-agent: SomeBot
 Disallow: /
 Allow: /some/other/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -653,7 +653,7 @@ User-agent: SomeBot
 Disallow: /
 Allow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -676,7 +676,7 @@ User-agent: SomeBot
 Disallow: /
 Allow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -696,7 +696,7 @@ Allow: /some/path
 Allow: /some/path
 Disallow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -716,7 +716,7 @@ Disallow: /some/path
 Disallow: /some/path
 Allow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -735,7 +735,7 @@ Allow: /some/path
 @"User-agent: SomeBot
 Disallow: /SoMe/paTh
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);

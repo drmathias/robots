@@ -16,7 +16,7 @@ public partial class RobotsTxtParserTests
 @"User-agent: AnotherBot
 Crawl-delay: 10
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -35,7 +35,7 @@ Crawl-delay: 10
 @"User-agent: *
 Disallow: 
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -54,7 +54,7 @@ Disallow:
 @"User-agent: *
 Crawl-delay: 10 
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -73,7 +73,7 @@ Crawl-delay: 10
 @"User-agent: *
 crawl-delay: 10 
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -95,7 +95,7 @@ Crawl-delay: 10
 User-agent: SomeBot
 Disallow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -117,7 +117,7 @@ Crawl-delay: 10
 User-agent: SomeBot
 Crawl-delay: 5 
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -140,7 +140,7 @@ User-agent: SomeBot
 User-agent: SomeOtherBot
 Disallow: /some/path
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -163,7 +163,7 @@ User-agent: SomeBot
 User-agent: SomeOtherBot
 Crawl-delay: 5 
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);
@@ -188,7 +188,7 @@ Crawl-delay: 15
 User-agent: SomeBot
 Crawl-delay: 5 
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         // Act
         var robotsTxt = await _parser.ReadFromStreamAsync(stream);

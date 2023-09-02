@@ -11,7 +11,7 @@ public interface ISitemap
     /// <summary>
     /// Url set included in the Sitemap
     /// </summary>
-    HashSet<UrlSetItem> UrlSet { get; }
+    IAsyncEnumerable<UrlSetItem> UrlSet { get; }
 }
 
 /// <summary>
@@ -19,27 +19,28 @@ public interface ISitemap
 /// </summary>
 public class Sitemap : ISitemap
 {
-    public Sitemap(HashSet<UrlSetItem> urlSet)
+    public Sitemap(IAsyncEnumerable<UrlSetItem> urlSet)
     {
         UrlSet = urlSet;
     }
 
     /// <inheritdoc />
-    public HashSet<UrlSetItem> UrlSet { get; }
-
-    internal Sitemap Combine(Sitemap other)
-    {
-        UrlSet.UnionWith(other.UrlSet);
-        return this;
-    }
+    public IAsyncEnumerable<UrlSetItem> UrlSet { get; }
 }
 
 internal class SitemapIndex : Sitemap
 {
-    public SitemapIndex(HashSet<Uri> sitemapUris) : base(new HashSet<UrlSetItem>())
+    public SitemapIndex(IAsyncEnumerable<Uri> sitemapUris) : base(Empty<UrlSetItem>())
     {
         SitemapUris = sitemapUris;
     }
 
-    public HashSet<Uri> SitemapUris { get; }
+    public IAsyncEnumerable<Uri> SitemapUris { get; }
+
+#pragma warning disable CS1998
+    private static async IAsyncEnumerable<T> Empty<T>()
+#pragma warning restore CS1998
+    {
+        yield break;
+    }
 }

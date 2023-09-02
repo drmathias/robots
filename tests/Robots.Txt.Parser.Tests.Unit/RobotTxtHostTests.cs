@@ -17,7 +17,7 @@ public partial class RobotsTxtParserTests
 @"User-agent: *
 Disallow: /
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
 
@@ -40,7 +40,7 @@ Disallow: /
 User-agent: *
 Disallow: /
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
 
@@ -63,7 +63,7 @@ Disallow: /
 User-agent: *
 Disallow: /
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
 
@@ -86,7 +86,7 @@ Disallow: /
 User-agent: *
 Disallow: /
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
 
@@ -109,7 +109,7 @@ Disallow: /
 User-agent: *
 Disallow: /
 ";
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://www.github.com"));
 

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Robots.Txt.Parser;
 
@@ -17,7 +17,7 @@ public interface IRobotsTxt
     /// <param name="modifiedSince">Filter to retrieve site maps modified after this date</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>A sitemap, or null or no sitemap is found</returns>
-    ValueTask<ISitemap?> LoadSitemapAsync(DateTime? modifiedSince = default, CancellationToken cancellationToken = default);
+    IAsyncEnumerable<UrlSetItem> LoadSitemapAsync(DateTime? modifiedSince = default, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves the crawl delay specified for a User-Agent
@@ -71,10 +71,17 @@ public class RobotsTxt : IRobotsTxt
     }
 
     /// <inheritdoc />
-    public async ValueTask<ISitemap?> LoadSitemapAsync(DateTime? modifiedSince = default, CancellationToken cancellationToken = default)
-        => _sitemapUrls.Count != 0
-            ? await _client.LoadSitemapsAsync(_sitemapUrls, modifiedSince, cancellationToken)
-            : await _client.LoadSitemapsAsync(new[] { new Uri(_client.BaseAddress, "/sitemap.xml") }, modifiedSince, cancellationToken);
+    public async IAsyncEnumerable<UrlSetItem> LoadSitemapAsync(DateTime? modifiedSince = default, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var urls = _sitemapUrls.Count != 0 ? _sitemapUrls.AsEnumerable() : new[] { new Uri(_client.BaseAddress, "/sitemap.xml") };
+        foreach (var url in urls)
+        {
+            await foreach (var item in _client.LoadSitemapsAsync(url, modifiedSince, cancellationToken))
+            {
+                yield return item;
+            }
+        }
+    }
 
     /// <inheritdoc />
     public bool TryGetCrawlDelay(ProductToken userAgent, out int crawlDelay)

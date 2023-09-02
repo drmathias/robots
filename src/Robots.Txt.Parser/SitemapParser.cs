@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -29,15 +30,15 @@ public class SitemapParser
     {
         try
         {
-            using var reader = XmlReader.Create(stream, new XmlReaderSettings { Async = true });
+            var reader = XmlReader.Create(stream, new XmlReaderSettings { Async = true });
             await reader.MoveToContentAsync();
 
             return reader switch
             {
                 XmlReader when reader.NamespaceURI == sitemapNamespace && reader.Name == "urlset"
-                    => await ParseUrlSet(stream, reader, modifiedSince, cancellationToken),
+                    => new Sitemap(ParseUrlSet(reader, () => stream.Position, modifiedSince, cancellationToken)),
                 XmlReader when reader.NamespaceURI == sitemapNamespace && reader.Name == "sitemapindex"
-                    => await ParseSitemapIndex(stream, reader, modifiedSince, cancellationToken),
+                    => new SitemapIndex(ParseSitemapIndex(reader, () => stream.Position, modifiedSince, cancellationToken)),
                 _ => throw new SitemapException("Unable to find root sitemap element")
             };
         }
@@ -47,67 +48,111 @@ public class SitemapParser
         }
     }
 
-    private static async Task<SitemapIndex> ParseSitemapIndex(Stream stream, XmlReader reader, DateTime? modifiedSince, CancellationToken cancellationToken)
+    private static async IAsyncEnumerable<Uri> ParseSitemapIndex(XmlReader reader, Func<long> getByteCount, DateTime? modifiedSince, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        await reader.ReadAsync();
-
-        var uris = new HashSet<Uri>();
-        while (!reader.EOF && reader.ReadState is ReadState.Interactive && !cancellationToken.IsCancellationRequested)
+        try
         {
-            if (reader.NodeType is not XmlNodeType.Element || reader.Name != "sitemap" || reader.NamespaceURI != sitemapNamespace)
+            await reader.ReadAsync();
+
+            while (!reader.EOF && reader.ReadState is ReadState.Interactive && !cancellationToken.IsCancellationRequested)
             {
-                await reader.ReadAsync();
-                continue;
+                if (reader.NodeType is not XmlNodeType.Element || reader.Name != "sitemap" || reader.NamespaceURI != sitemapNamespace)
+                {
+                    await reader.ReadAsync();
+                    continue;
+                }
+
+                XElement node;
+                try
+                {
+                    node = (XElement)await XNode.ReadFromAsync(reader, cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    throw new SitemapException("Unable to parse sitemap item", e);
+                }
+
+                if (getByteCount() > ByteCount50MiB) throw new SitemapException("Reached parsing limit");
+
+                Uri location;
+                try
+                {
+                    var lastModifiedString = node.Element(sitemapNamespace + "lastmod")?.Value;
+                    DateTime? lastModified = lastModifiedString is not null ? DateTime.Parse(lastModifiedString) : null;
+                    if (modifiedSince is not null && lastModified is not null && lastModified < modifiedSince) continue;
+                    location = new Uri(node.Element(sitemapNamespace + "loc")!.Value);
+                }
+                catch (Exception e)
+                {
+                    throw new SitemapException("Unable to parse sitemap item", e);
+                }
+
+                yield return location;
             }
-
-            var node = (XElement)await XNode.ReadFromAsync(reader, cancellationToken);
-
-            if (stream.Position > ByteCount50MiB) throw new SitemapException("Reached parsing limit");
-
-            var lastModifiedString = node.Element(sitemapNamespace + "lastmod")?.Value;
-            DateTime? lastModified = lastModifiedString is not null ? DateTime.Parse(lastModifiedString) : null;
-
-            if (modifiedSince is not null && lastModified is not null && lastModified < modifiedSince) continue;
-
-            var location = new Uri(node.Element(sitemapNamespace + "loc")!.Value);
-
-            uris.Add(location);
         }
-        return new SitemapIndex(uris);
+        finally
+        {
+            reader.Dispose();
+        }
     }
 
-    private static async Task<Sitemap> ParseUrlSet(Stream stream, XmlReader reader, DateTime? modifiedSince, CancellationToken cancellationToken)
+    private static async IAsyncEnumerable<UrlSetItem> ParseUrlSet(XmlReader reader, Func<long> getByteCount, DateTime? modifiedSince, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        await reader.ReadAsync();
-
-        var items = new HashSet<UrlSetItem>();
-        while (!reader.EOF && reader.ReadState is ReadState.Interactive && !cancellationToken.IsCancellationRequested)
+        try
         {
-            if (reader.NodeType is not XmlNodeType.Element || reader.Name != "url" || reader.NamespaceURI != sitemapNamespace)
+            await reader.ReadAsync();
+
+            while (!reader.EOF && reader.ReadState is ReadState.Interactive && !cancellationToken.IsCancellationRequested)
             {
-                await reader.ReadAsync();
-                continue;
+                if (reader.NodeType is not XmlNodeType.Element || reader.Name != "url" || reader.NamespaceURI != sitemapNamespace)
+                {
+                    await reader.ReadAsync();
+                    continue;
+                }
+
+                XElement node;
+                try
+                {
+                    node = (XElement)await XNode.ReadFromAsync(reader, cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    throw new SitemapException("Unable to parse sitemap item", e);
+                }
+
+                if (getByteCount() > ByteCount50MiB) throw new SitemapException("Reached parsing limit");
+
+                Uri location;
+                DateTime? lastModified;
+                ChangeFrequency? changeFrequency;
+                decimal? priority;
+
+                try
+                {
+                    var lastModifiedString = node.Element(sitemapNamespace + "lastmod")?.Value;
+                    lastModified = lastModifiedString is not null ? DateTime.Parse(lastModifiedString) : null;
+
+                    if (modifiedSince is not null && lastModified is not null && lastModified < modifiedSince) continue;
+
+                    location = new Uri(node.Element(sitemapNamespace + "loc")!.Value);
+                    var changeFrequencyString = node.Element(sitemapNamespace + "changefreq")?.Value;
+                    var priorityString = node.Element(sitemapNamespace + "priority")?.Value;
+                    changeFrequency = changeFrequencyString is not null
+                        ? Enum.Parse<ChangeFrequency>(changeFrequencyString, ignoreCase: true)
+                        : null;
+                    priority = priorityString is not null ? decimal.Parse(priorityString) : null;
+                }
+                catch (Exception e)
+                {
+                    throw new SitemapException("Unable to parse sitemap item", e);
+                }
+
+                yield return new UrlSetItem(location, lastModified, changeFrequency, priority);
             }
-
-            var node = (XElement)await XNode.ReadFromAsync(reader, cancellationToken);
-
-            if (stream.Position > ByteCount50MiB) throw new SitemapException("Reached parsing limit");
-
-            var lastModifiedString = node.Element(sitemapNamespace + "lastmod")?.Value;
-            DateTime? lastModified = lastModifiedString is not null ? DateTime.Parse(lastModifiedString) : null;
-
-            if (modifiedSince is not null && lastModified is not null && lastModified < modifiedSince) continue;
-
-            var location = new Uri(node.Element(sitemapNamespace + "loc")!.Value);
-            var changeFrequencyString = node.Element(sitemapNamespace + "changefreq")?.Value;
-            var priorityString = node.Element(sitemapNamespace + "priority")?.Value;
-            ChangeFrequency? changeFrequency = changeFrequencyString is not null
-                ? Enum.Parse<ChangeFrequency>(changeFrequencyString, ignoreCase: true)
-                : null;
-            decimal? priority = priorityString is not null ? decimal.Parse(priorityString) : null;
-
-            items.Add(new UrlSetItem(location, lastModified, changeFrequency, priority));
         }
-        return new Sitemap(items);
+        finally
+        {
+            reader.Dispose();
+        }
     }
 }

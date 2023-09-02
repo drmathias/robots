@@ -2,7 +2,7 @@ Table of Contents
 ===
 
 - [Overview](#overview)
-- [Why Build Yet Another Parser?](#why-build-yet-another-parser)
+  - [Design Considerations](#design-considerations)
 - [Features](#features)
 - [Usage](#usage)
   - [Minimal Example](#minimal-example)
@@ -29,11 +29,11 @@ Supports the proposed [RFC9309](https://datatracker.ietf.org/doc/html/rfc9309) s
 - Host
 - Crawl-delay
 
-# Why Build Yet Another Parser?
-
-There are several _robots.txt_ and _sitemap_ parsers that already exist, however they all suffer from their lack of flexibility.
+## Design Considerations
 
 This library is based upon `HttpClient`, making it very familiar, easy to use and adaptable to your needs. Since you have full control over the `HttpClient`, you are able to configure custom message handlers to intercept outgoing requests and responses. For example, you may want to add custom headers on a request, configure additional logging or set up a retry policy.
+
+Some websites can have very large sitemaps. For this reason, async streaming is supported as the preferred way of parsing sitemaps.
 
 There is also the possibility to extend this library to support protocols other than HTTP, such as FTP.
 
@@ -53,6 +53,8 @@ There is also the possibility to extend this library to support protocols other 
 | Atom 0.3/1.0 feeds | ❌ | 0.8 |
 | Sitemaps XML format | ✔️ | |
 | Simple text sitemaps | ✔️ | |
+| Async streaming of sitemaps | ✔️ | |
+| Cancellation token support | ✔️ | |
 | Memory management | ✔️ | |
 
 # Usage
@@ -136,9 +138,11 @@ var robotWebClient = new RobotWebClient<GitHubWebsite>(httpClient);
 var robotsTxt = await robotWebClient.LoadRobotsTxtAsync();
 // providing a datetime only retrieves sitemap items modified since this datetime
 var modifiedSince = new DateTime(2023, 01, 01);
-// sitemaps are scanned recursively and combined into single Sitemap object
+// sitemaps are iterated asynchronously
 // even if robots.txt does not contain sitemap directive, looks for a sitemap at {TWebsite.BaseAddress}/sitemap.xml
-var sitemap = await robotsTxt.LoadSitemapAsync(modifiedSince);
+await foreach(var item in robotsTxt.LoadSitemapAsync(modifiedSince))
+{
+}
 ```
 
 ## Checking a Rule

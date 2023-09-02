@@ -1,11 +1,13 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace Robots.Txt.Parser;
 
 /// <summary>
-/// Exception raised when parsing a Sitemap
+/// Exception raised when parsing a sitemap
 /// </summary>
+[Serializable]
 public class SitemapException : Exception
 {
     internal SitemapException()
@@ -20,6 +22,7 @@ public class SitemapException : Exception
     {
     }
 
+    [ExcludeFromCodeCoverage]
     protected SitemapException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
