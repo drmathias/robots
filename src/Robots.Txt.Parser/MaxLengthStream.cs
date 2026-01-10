@@ -3,17 +3,11 @@ using System.IO;
 
 namespace Robots.Txt.Parser;
 
-public class MaxLengthStream : Stream
+public class MaxLengthStream(Stream inner, long maxBytes) : Stream
 {
-    private readonly Stream _inner;
-    private readonly long _maxBytes;
+    private readonly Stream _inner = inner;
+    private readonly long _maxBytes = maxBytes;
     private long _bytesRead;
-
-    public MaxLengthStream(Stream inner, long maxBytes)
-    {
-        _inner = inner;
-        _maxBytes = maxBytes;
-    }
 
     public override int Read(byte[] buffer, int offset, int count)
     {

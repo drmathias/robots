@@ -68,7 +68,7 @@ public class RobotsTxt : IRobotsTxt
         _baseUrl = baseUrl;
         _userAgentRules = userAgentRules;
         _userAgentCrawlDirectives = userAgentCrawlDirectives;
-        _userAgents = _userAgentRules.Keys.Concat(_userAgentCrawlDirectives.Keys).ToHashSet();
+        _userAgents = [.. _userAgentRules.Keys, .. _userAgentCrawlDirectives.Keys];
         _host = host;
         _sitemapUrls = sitemapUrls;
     }
@@ -76,7 +76,7 @@ public class RobotsTxt : IRobotsTxt
     /// <inheritdoc />
     public async IAsyncEnumerable<UrlSetItem> LoadSitemapAsync(DateTime? modifiedSince = default, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var urls = _sitemapUrls.Count != 0 ? _sitemapUrls.AsEnumerable() : new[] { new Uri(_baseUrl, "/sitemap.xml") };
+        var urls = _sitemapUrls.Count != 0 ? _sitemapUrls.AsEnumerable() : [new Uri(_baseUrl, "/sitemap.xml")];
         foreach (var url in urls)
         {
             await foreach (var item in _client.LoadSitemapsAsync(url, modifiedSince, cancellationToken))
@@ -111,7 +111,7 @@ public class RobotsTxt : IRobotsTxt
     {
         if (!_userAgentRules.TryGetValue(userAgent, out var rules) && !_userAgentRules.TryGetValue(ProductToken.Wildcard, out rules))
         {
-            ruleChecker = new RobotRuleChecker(new HashSet<UrlRule>());
+            ruleChecker = new RobotRuleChecker([]);
             return false;
         }
 

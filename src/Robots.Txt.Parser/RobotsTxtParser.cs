@@ -10,7 +10,12 @@ namespace Robots.Txt.Parser;
 /// <summary>
 /// Provides the ability to parse robots.txt 
 /// </summary>
-public class RobotsTxtParser
+/// <remarks>
+/// Creates a robots.txt parser
+/// </remarks>
+/// <param name="robotClient">Client used to send requests to the website</param>
+/// <param name="baseUrl">Base url of the website</param>
+public class RobotsTxtParser(IRobotClient robotClient, Uri baseUrl)
 {
     private const long ByteCount500KiB = 500 * 1024;
 
@@ -21,19 +26,8 @@ public class RobotsTxtParser
     private static readonly string AllowDirective = "Allow: ";
     private static readonly string DisallowDirective = "Disallow: ";
 
-    private readonly IRobotClient _robotClient;
-    private readonly Uri _baseUrl;
-
-    /// <summary>
-    /// Creates a robots.txt parser
-    /// </summary>
-    /// <param name="robotClient">Client used to send requests to the website</param>
-    /// <param name="baseUrl">Base url of the website</param>
-    public RobotsTxtParser(IRobotClient robotClient, Uri baseUrl)
-    {
-        _robotClient = robotClient;
-        _baseUrl = baseUrl;
-    }
+    private readonly IRobotClient _robotClient = robotClient;
+    private readonly Uri _baseUrl = baseUrl;
 
     /// <summary>
     /// Parses <see cref="RobotsTxt"/> from a <see cref="Stream"/>

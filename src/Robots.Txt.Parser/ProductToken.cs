@@ -9,7 +9,7 @@ namespace Robots.Txt.Parser;
 public partial class ProductToken : IEquatable<string>, IEquatable<ProductToken>
 {
     public static readonly ProductToken Wildcard = new("*");
-    private static Regex ValidationPattern = ProductTokenValidationRegex();
+    private static readonly Regex ValidationPattern = ProductTokenValidationRegex();
 
     private readonly string _value;
 

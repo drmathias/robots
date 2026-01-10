@@ -203,11 +203,11 @@ public class SitemapParserTests
         var urlSet = await sitemap.UrlSet.ToListAsync();
         var sitemapUris = await sitemapRoot.SitemapUris.ToListAsync();
         urlSet.Should().BeEmpty();
-        sitemapUris.Should().BeEquivalentTo(new[]
-        {
+        sitemapUris.Should().BeEquivalentTo(
+        [
             new Uri("https://www.github.com/organisations.xml"),
             new Uri("https://www.github.com/people.xml"),
-        });
+        ]);
     }
 
     [Fact]
@@ -236,11 +236,11 @@ public class SitemapParserTests
         var urlSet = await sitemap.UrlSet.ToListAsync();
         var sitemapUris = await sitemapRoot.SitemapUris.ToListAsync();
         urlSet.Should().BeEmpty();
-        sitemapUris.Should().BeEquivalentTo(new[]
-        {
+        sitemapUris.Should().BeEquivalentTo(
+        [
             new Uri("https://www.github.com/organisations.xml"),
             new Uri("https://www.github.com/people.xml"),
-        });
+        ]);
     }
 
     [Fact]
@@ -269,11 +269,11 @@ public class SitemapParserTests
         var urlSet = await sitemap.UrlSet.ToListAsync();
         var sitemapUris = await sitemapRoot.SitemapUris.ToListAsync();
         urlSet.Should().BeEmpty();
-        sitemapUris.Should().BeEquivalentTo(new[]
-        {
+        sitemapUris.Should().BeEquivalentTo(
+        [
             new Uri("https://www.github.com/organisations.xml"),
             new Uri("https://www.github.com/people.xml"),
-        });
+        ]);
     }
 
     [Fact]
@@ -302,7 +302,7 @@ public class SitemapParserTests
         var urlSet = await sitemap.UrlSet.ToListAsync();
         var sitemapUris = await sitemapRoot.SitemapUris.ToListAsync();
         urlSet.Should().BeEmpty();
-        sitemapUris.Should().BeEquivalentTo(new[] { new Uri("https://www.github.com/people.xml") });
+        sitemapUris.Should().BeEquivalentTo([new Uri("https://www.github.com/people.xml")]);
     }
 
     [Fact]
@@ -326,11 +326,11 @@ public class SitemapParserTests
 
         // Assert
         var urlSet = await sitemap.UrlSet.ToListAsync();
-        urlSet.Should().BeEquivalentTo(new[]
-        {
+        urlSet.Should().BeEquivalentTo(
+        [
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  null, null, null),
             new UrlSetItem(new Uri("https://www.github.com/drmathias/Robots.Txt.Parser"), null, null, null),
-        });
+        ]);
     }
 
     [Fact]
@@ -354,11 +354,11 @@ public class SitemapParserTests
 
         // Assert
         var urlSet = await sitemap.UrlSet.ToListAsync();
-        urlSet.Should().BeEquivalentTo(new[]
-        {
+        urlSet.Should().BeEquivalentTo(
+        [
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  null, null, null),
             new UrlSetItem(new Uri("https://www.github.com/drmathias/Robots.Txt.Parser"), null, null, null),
-        });
+        ]);
     }
 
     [Fact]
@@ -388,11 +388,11 @@ public class SitemapParserTests
 
         // Assert
         var urlSet = await sitemap.UrlSet.ToListAsync();
-        urlSet.Should().BeEquivalentTo(new[]
-        {
+        urlSet.Should().BeEquivalentTo(
+        [
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  new DateTime(2023, 06, 01), ChangeFrequency.Daily, 0.8m),
             new UrlSetItem(new Uri("https://www.github.com/drmathias/Robots.Txt.Parser"), new DateTime(2023, 05, 12), ChangeFrequency.Monthly, 0.5m),
-        });
+        ]);
     }
 
     [Fact]
@@ -422,11 +422,11 @@ public class SitemapParserTests
 
         // Assert
         var urlSet = await sitemap.UrlSet.ToListAsync();
-        urlSet.Should().BeEquivalentTo(new[]
-        {
+        urlSet.Should().BeEquivalentTo(
+        [
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  new DateTime(2023, 06, 01), ChangeFrequency.Daily, 0.8m),
             new UrlSetItem(new Uri("https://www.github.com/drmathias/Robots.Txt.Parser"), new DateTime(2023, 05, 12), ChangeFrequency.Monthly, 0.5m),
-        });
+        ]);
     }
 
     [Fact]
@@ -456,11 +456,11 @@ public class SitemapParserTests
 
         // Assert
         var urlSet = await sitemap.UrlSet.ToListAsync();
-        urlSet.Should().BeEquivalentTo(new[]
-        {
+        urlSet.Should().BeEquivalentTo(
+        [
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  new DateTime(2023, 06, 01), ChangeFrequency.Daily, 0.8m),
             new UrlSetItem(new Uri("https://www.github.com/drmathias/Robots.Txt.Parser"), new DateTime(2023, 05, 12), ChangeFrequency.Monthly, 0.5m),
-        });
+        ]);
     }
 
     [Fact]
@@ -490,10 +490,10 @@ public class SitemapParserTests
 
         // Assert
         var urlSet = await sitemap.UrlSet.ToListAsync();
-        urlSet.Should().BeEquivalentTo(new[]
-        {
+        urlSet.Should().BeEquivalentTo(
+        [
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  new DateTime(2023, 06, 01), ChangeFrequency.Daily, 0.8m),
-        });
+        ]);
     }
 
     [Fact]
