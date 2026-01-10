@@ -67,23 +67,14 @@ dotnet add package Robots.Txt.Parser
 
 ## Minimal Example
 
-First, create an implementation of `IWebsiteMetadata` for the host address that you wish to use.
-
-```csharp
-public class GitHubWebsite : IWebsiteMetadata
-{
-    public static Uri BaseAddress => new("https://www.github.com");
-}
-```
-
-Next, create an instance of `RobotWebClient<TWebsite>`.
+First, create an instance of `RobotWebClient`.
 
 ### With Dependency Injection
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-    services.AddHttpClient<IRobotWebClient<GitHubWebsite>, RobotWebClient<GitHubWebsite>>();
+    services.AddHttpClient<IRobotWebClient, RobotWebClient>();
 }
 ```
 
@@ -91,12 +82,12 @@ public void ConfigureServices(IServiceCollection services)
 
 ```csharp
 using var httpClient = new HttpClient();
-var robotWebClient = new RobotWebClient<GitHubWebsite>(httpClient);
+var robotWebClient = new RobotWebClient(httpClient);
 ```
 
 ## Web Crawler Example
 
-Optionally, specify message handlers to modify the HTTP pipeline. For example, you may be attempting to crawl the website and therefore will want to reduce the rate of your requests, to do so responsibly. You can achieve this by adding a custom `HttpMessageHandler` to the pipeline.
+Optionally, specify message handlers to modify the HTTP pipeline. For example, you may want to throttle the rate of your requests, to responsibily crawl a large sitemap. You can achieve this by adding a custom `HttpMessageHandler` to the pipeline.
 
 ```csharp
 public class ResponsibleCrawlerHttpClientHandler : DelegatingHandler
@@ -116,7 +107,7 @@ public class ResponsibleCrawlerHttpClientHandler : DelegatingHandler
 public void ConfigureServices(IServiceCollection services)
 {
     services.TryAddTransient<ResponsibleCrawlerHttpClientHandler>();
-    services.AddHttpClient<IRobotWebClient<GitHubWebsite>, RobotWebClient<GitHubWebsite>>()
+    services.AddHttpClient<IRobotWebClient, RobotWebClient>()
             .AddPrimaryHttpMessageHandler<ResponsibleCrawlerHttpClientHandler>();
 }
 ```
@@ -129,17 +120,17 @@ var httpClientHandler = new HttpClientHandler
     InnerHandler = new ResponsibleCrawlerHttpClientHandler()
 };
 using var httpClient = new HttpClient(httpClientHandler);
-var robotWebClient = new RobotWebClient<GitHubWebsite>(httpClient);
+var robotWebClient = new RobotWebClient(httpClient);
 ```
 
 ## Retrieving the Sitemap
 
 ```csharp
-var robotsTxt = await robotWebClient.LoadRobotsTxtAsync();
+var robotsTxt = await robotWebClient.LoadRobotsTxtAsync(new Uri("https://github.com"));
 // providing a datetime only retrieves sitemap items modified since this datetime
 var modifiedSince = new DateTime(2023, 01, 01);
 // sitemaps are iterated asynchronously
-// even if robots.txt does not contain sitemap directive, looks for a sitemap at {TWebsite.BaseAddress}/sitemap.xml
+// even if robots.txt does not contain sitemap directive, looks for a sitemap at {url}/sitemap.xml
 await foreach(var item in robotsTxt.LoadSitemapAsync(modifiedSince))
 {
 }
@@ -148,9 +139,9 @@ await foreach(var item in robotsTxt.LoadSitemapAsync(modifiedSince))
 ## Checking a Rule
 
 ```csharp
-var robotsTxt = await robotWebClient.LoadRobotsTxtAsync();
+var robotsTxt = await robotWebClient.LoadRobotsTxtAsync(new Uri("https://github.com"));
 // if rules for the specific robot are not present, it falls back to the wildcard *
-var anyRulesDefined = robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var rules);
+var hasAnyRulesDefined = robotsTxt.TryGetRules(ProductToken.Parse("SomeBot"), out var rules);
 // even if no wildcard rules exist, an empty rule-checker is returned
 var isAllowed = rules.IsAllowed("/some/path");
 ```
@@ -158,15 +149,15 @@ var isAllowed = rules.IsAllowed("/some/path");
 ## Getting Preferred Host
 
 ```csharp
-var robotsTxt = await robotWebClient.LoadRobotsTxtAsync();
-// host value will fall back to TWebsite.BaseAddress host, if no directive exists
+var robotsTxt = await robotWebClient.LoadRobotsTxtAsync(new Uri("https://github.com"));
+// host value will fall back to provided host, if no directive exists
 var hasHostDirective = robotsTxt.TryGetHost(out var host);
 ```
 
 ## Getting Crawl Delay
 
 ```csharp
-var robotsTxt = await robotWebClient.LoadRobotsTxtAsync();
+var robotsTxt = await robotWebClient.LoadRobotsTxtAsync(new Uri("https://github.com"));
 // if rules for the specific robot are not present, it falls back to the wildcard *
 // if no Crawl-delay directive exists, crawl delay will be 0
 var hasCrawlDelayDirective = robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay);

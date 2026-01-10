@@ -11,13 +11,11 @@ namespace Robots.Txt.Parser;
 /// </summary>
 public interface IRobotClient
 {
-    protected internal Uri BaseAddress { get; }
-
     /// <summary>
     /// Loads and parses the <see cref="IRobotsTxt"/> file from the website
     /// </summary>
     /// <exception cref="HttpRequestException">Thrown if a status code that cannot be handled is returned.</exception>
-    Task<IRobotsTxt> LoadRobotsTxtAsync(CancellationToken cancellationToken = default);
+    Task<IRobotsTxt> LoadRobotsTxtAsync(Uri url, CancellationToken cancellationToken = default);
 
     protected internal IAsyncEnumerable<UrlSetItem> LoadSitemapsAsync(Uri uri, DateTime? modifiedSince = null, CancellationToken cancellationToken = default);
 }

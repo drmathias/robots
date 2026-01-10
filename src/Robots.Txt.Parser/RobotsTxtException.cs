@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 
 namespace Robots.Txt.Parser;
 
@@ -19,11 +17,6 @@ public class RobotsTxtException : Exception
     }
 
     internal RobotsTxtException(string? message, Exception? innerException) : base(message, innerException)
-    {
-    }
-
-    [ExcludeFromCodeCoverage]
-    protected RobotsTxtException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 }

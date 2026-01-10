@@ -11,42 +11,23 @@ namespace Robots.Txt.Parser.Http;
 /// <summary>
 /// Client for retrieving robots.txt from a website
 /// </summary>
-public interface IRobotWebClient : IRobotClient
-{
-}
-
-/// <summary>
-/// Client for retrieving robots.txt from a website
-/// </summary>
-public interface IRobotWebClient<TWebsite> : IRobotWebClient
-    where TWebsite : IWebsiteMetadata
-{
-}
-
-
-/// <summary>
-/// Client for retrieving robots.txt from a website
-/// </summary>
-public class RobotWebClient<TWebsite> : IRobotWebClient<TWebsite>
-    where TWebsite : IWebsiteMetadata
+public class RobotWebClient : IRobotClient
 {
     private readonly HttpClient _httpClient;
 
     public RobotWebClient(HttpClient httpClient)
     {
         _httpClient = httpClient;
-        _httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
     }
 
-    Uri IRobotClient.BaseAddress => TWebsite.BaseAddress;
-
-    public async Task<IRobotsTxt> LoadRobotsTxtAsync(CancellationToken cancellationToken = default)
+    public async Task<IRobotsTxt> LoadRobotsTxtAsync(Uri url, CancellationToken cancellationToken = default)
     {
+        var baseUrl = new Uri(url.GetLeftPart(UriPartial.Authority));
         /*
            "The instructions must be accessible via HTTP [2] from the site that the instructions are to be applied to, as a resource of Internet
            Media Type [3] "text/plain" under a standard relative path on the server: "/robots.txt"."
         */
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri(TWebsite.BaseAddress, "/robots.txt"));
+        var request = new HttpRequestMessage(HttpMethod.Get, new Uri(baseUrl, "/robots.txt"));
         request.Headers.Add("Accept", "text/plain,*/*");
         var response = await _httpClient.SendAsync(request, cancellationToken);
         var statusCodeNumber = (int)response.StatusCode;
@@ -60,7 +41,7 @@ public class RobotWebClient<TWebsite> : IRobotWebClient<TWebsite>
                 If a server status code indicates that the robots.txt file is unavailable to the crawler,
                 then the crawler MAY access any resources on the server.
             */
-            return new RobotsTxt(this, new Dictionary<ProductToken, HashSet<UrlRule>>(), new Dictionary<ProductToken, int>(), null, new HashSet<Uri>());
+            return new RobotsTxt(this, baseUrl, new Dictionary<ProductToken, HashSet<UrlRule>>(), new Dictionary<ProductToken, int>(), null, new HashSet<Uri>());
         }
 
         if (statusCodeNumber >= 500)
@@ -74,11 +55,11 @@ public class RobotWebClient<TWebsite> : IRobotWebClient<TWebsite>
             {
                 { ProductToken.Wildcard, new HashSet<UrlRule> { new (RuleType.Disallow, "/") } }
             };
-            return new RobotsTxt(this, userAgentRules, new Dictionary<ProductToken, int>(), null, new HashSet<Uri>());
+            return new RobotsTxt(this, baseUrl, userAgentRules, new Dictionary<ProductToken, int>(), null, new HashSet<Uri>());
         }
 
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        return await new RobotsTxtParser(this).ReadFromStreamAsync(stream, cancellationToken);
+        return await new RobotsTxtParser(this, baseUrl).ReadFromStreamAsync(stream, cancellationToken);
     }
 
     async IAsyncEnumerable<UrlSetItem> IRobotClient.LoadSitemapsAsync(Uri uri, DateTime? modifiedSince, [EnumeratorCancellation] CancellationToken cancellationToken)

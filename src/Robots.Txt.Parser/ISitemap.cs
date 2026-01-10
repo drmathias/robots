@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Robots.Txt.Parser;
 
@@ -30,17 +31,10 @@ public class Sitemap : ISitemap
 
 internal class SitemapIndex : Sitemap
 {
-    public SitemapIndex(IAsyncEnumerable<Uri> sitemapUris) : base(Empty<UrlSetItem>())
+    public SitemapIndex(IAsyncEnumerable<Uri> sitemapUris) : base(AsyncEnumerable.Empty<UrlSetItem>())
     {
         SitemapUris = sitemapUris;
     }
 
     public IAsyncEnumerable<Uri> SitemapUris { get; }
-
-#pragma warning disable CS1998
-    private static async IAsyncEnumerable<T> Empty<T>()
-#pragma warning restore CS1998
-    {
-        yield break;
-    }
 }

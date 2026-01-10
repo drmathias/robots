@@ -1,9 +1,11 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Extensions.FileProviders;
 using Xunit;
 
 namespace Robots.Txt.Parser.Tests.Unit;
@@ -492,5 +494,77 @@ public class SitemapParserTests
         {
             new UrlSetItem(new Uri("https://www.github.com/drmathias"),  new DateTime(2023, 06, 01), ChangeFrequency.Daily, 0.8m),
         });
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_Over50MiB_ThrowSitemapException()
+    {
+        // Arrange
+        var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
+        await using var stream = fileProvider.GetFileInfo("over-50mib-sitemap.xml").CreateReadStream();
+
+        // Act
+        var parse = async () =>
+        {
+            var sitemap = await SitemapParser.ReadFromStreamAsync(stream);
+            var urlSet = await sitemap.UrlSet.ToListAsync();
+        };
+
+        // Assert
+        await parse.Should().ThrowAsync<SitemapException>();
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_Exactly50MiB_DoNotThrow()
+    {
+        // Arrange
+        var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
+        await using var stream = fileProvider.GetFileInfo("exactly-50mib-sitemap.xml").CreateReadStream();
+
+        // Act
+        var parse = async () =>
+        {
+            var sitemap = await SitemapParser.ReadFromStreamAsync(stream);
+            var urlSet = await sitemap.UrlSet.ToListAsync();
+        };
+
+        // Assert
+        await parse.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_Over50000Lines_ThrowSitemapException()
+    {
+        // Arrange
+        var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
+        await using var stream = fileProvider.GetFileInfo("over-50k-lines-sitemap.xml").CreateReadStream();
+
+        // Act
+        var parse = async () =>
+        {
+            var sitemap = await SitemapParser.ReadFromStreamAsync(stream);
+            var urlSet = await sitemap.UrlSet.ToListAsync();
+        };
+
+        // Assert
+        await parse.Should().ThrowAsync<SitemapException>();
+    }
+
+    [Fact]
+    public async Task ReadFromStreamAsync_Exactly50000Lines_DoNotThrow()
+    {
+        // Arrange
+        var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
+        await using var stream = fileProvider.GetFileInfo("exactly-50k-lines-sitemap.xml").CreateReadStream();
+
+        // Act
+        var parse = async () =>
+        {
+            var sitemap = await SitemapParser.ReadFromStreamAsync(stream);
+            var urlSet = await sitemap.UrlSet.ToListAsync();
+        };
+
+        // Assert
+        await parse.Should().NotThrowAsync();
     }
 }

@@ -11,19 +11,6 @@ namespace Robots.Txt.Parser.Tests.Unit.Http;
 
 public class RobotWebClientTests
 {
-    [Fact]
-    public void RobotWebClient_TWebsite_SetBaseUrl()
-    {
-        // Arrange
-        var httpClientMock = new Mock<HttpClient>();
-
-        // Act
-        IRobotClient robotWebClient = new RobotWebClient<GitHubWebsite>(httpClientMock.Object);
-
-        // Assert
-        robotWebClient.BaseAddress.Should().Be(GitHubWebsite.BaseAddress);
-    }
-
     [Theory]
     [InlineData(500)]
     [InlineData(501)]
@@ -34,12 +21,12 @@ public class RobotWebClientTests
         // Arrange
         var httpClientHandlerMock = new Mock<HttpClientHandler>();
         using var httpClient = new HttpClient(httpClientHandlerMock.Object);
-        var robotWebClient = new RobotWebClient<GitHubWebsite>(httpClient);
+        var robotWebClient = new RobotWebClient(httpClient);
 
         httpClientHandlerMock.SetupToRespondWith((HttpStatusCode)statusCode);
 
         // Act
-        var robotsTxt = await robotWebClient.LoadRobotsTxtAsync();
+        var robotsTxt = await robotWebClient.LoadRobotsTxtAsync(new Uri("https://github.com"));
 
         // Assert
         robotsTxt.Should().NotBe(null);
@@ -58,12 +45,12 @@ public class RobotWebClientTests
         // Arrange
         var httpClientHandlerMock = new Mock<HttpClientHandler>();
         using var httpClient = new HttpClient(httpClientHandlerMock.Object);
-        var robotWebClient = new RobotWebClient<GitHubWebsite>(httpClient);
+        var robotWebClient = new RobotWebClient(httpClient);
 
         httpClientHandlerMock.SetupToRespondWith((HttpStatusCode)statusCode);
 
         // Act
-        var robotsTxt = await robotWebClient.LoadRobotsTxtAsync();
+        var robotsTxt = await robotWebClient.LoadRobotsTxtAsync(new Uri("https://github.com"));
 
         // Assert
         robotsTxt.Should().NotBe(null);
@@ -82,19 +69,14 @@ public class RobotWebClientTests
         // Arrange
         var httpClientHandlerMock = new Mock<HttpClientHandler>();
         using var httpClient = new HttpClient(httpClientHandlerMock.Object);
-        var robotWebClient = new RobotWebClient<GitHubWebsite>(httpClient);
+        var robotWebClient = new RobotWebClient(httpClient);
 
         httpClientHandlerMock.SetupToRespondWith((HttpStatusCode)statusCode);
 
         // Act
-        var robotsTxt = await robotWebClient.LoadRobotsTxtAsync();
+        var robotsTxt = await robotWebClient.LoadRobotsTxtAsync(new Uri("https://github.com"));
 
         // Assert
         robotsTxt.Should().NotBeNull(null);
     }
-}
-
-public class GitHubWebsite : IWebsiteMetadata
-{
-    public static Uri BaseAddress => new("https://www.github.com");
 }

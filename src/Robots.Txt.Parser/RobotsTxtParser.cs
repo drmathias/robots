@@ -22,14 +22,17 @@ public class RobotsTxtParser
     private static readonly string DisallowDirective = "Disallow: ";
 
     private readonly IRobotClient _robotClient;
+    private readonly Uri _baseUrl;
 
     /// <summary>
     /// Creates a robots.txt parser
     /// </summary>
     /// <param name="robotClient">Client used to send requests to the website</param>
-    public RobotsTxtParser(IRobotClient robotClient)
+    /// <param name="baseUrl">Base url of the website</param>
+    public RobotsTxtParser(IRobotClient robotClient, Uri baseUrl)
     {
         _robotClient = robotClient;
+        _baseUrl = baseUrl;
     }
 
     /// <summary>
@@ -79,23 +82,21 @@ public class RobotsTxtParser
                     continue;
                 }
 
-                if (currentUserAgents.Count == 0)
+                if (line.StartsWith(SitemapDirective, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    if (line.StartsWith(SitemapDirective, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        var sitemapValue = GetValueOfDirective(line, SitemapDirective);
-                        if (Uri.TryCreate(sitemapValue, UriKind.Absolute, out var sitemapAddress)) sitemaps.Add(sitemapAddress);
-                    }
-                    else if (host is null && line.StartsWith(HostDirective, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        var hostValue = GetValueOfDirective(line, HostDirective);
-                        if (Uri.IsWellFormedUriString(hostValue, UriKind.Absolute)
-                            && Uri.TryCreate(hostValue, UriKind.Absolute, out var uri)) hostValue = uri.Host;
-                        var hostNameType = Uri.CheckHostName(hostValue);
-                        if (hostNameType != UriHostNameType.Unknown && hostNameType != UriHostNameType.Basic) host = hostValue;
-                    }
+                    var sitemapValue = GetValueOfDirective(line, SitemapDirective);
+                    if (Uri.TryCreate(sitemapValue, UriKind.Absolute, out var sitemapAddress)) sitemaps.Add(sitemapAddress);
                 }
-                else
+                else if (host is null && line.StartsWith(HostDirective, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var hostValue = GetValueOfDirective(line, HostDirective);
+                    if (Uri.IsWellFormedUriString(hostValue, UriKind.Absolute)
+                        && Uri.TryCreate(hostValue, UriKind.Absolute, out var uri)) hostValue = uri.Host;
+                    var hostNameType = Uri.CheckHostName(hostValue);
+                    if (hostNameType != UriHostNameType.Unknown && hostNameType != UriHostNameType.Basic) host = hostValue;
+                }
+
+                if (currentUserAgents.Count != 0)
                 {
                     if (line.StartsWith(DisallowDirective, StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -120,7 +121,7 @@ public class RobotsTxtParser
                 previousLineWasUserAgent = false;
             }
 
-            return new RobotsTxt(_robotClient, userAgentRules, userAgentCrawlDirectives, host, sitemaps);
+            return new RobotsTxt(_robotClient, _baseUrl, userAgentRules, userAgentCrawlDirectives, host, sitemaps);
         }
         catch (Exception e) when (e is not RobotsTxtException)
         {

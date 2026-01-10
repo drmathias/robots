@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Robots.Txt.Parser/Robots.Txt.Parser.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Robots.Txt.Parser.Tests.Unit/Robots.Txt.Parser.Tests.Unit.csproj" />
+  </Folder>
+</Solution>

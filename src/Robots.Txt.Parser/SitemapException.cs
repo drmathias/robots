@@ -21,9 +21,4 @@ public class SitemapException : Exception
     internal SitemapException(string? message, Exception? innerException) : base(message, innerException)
     {
     }
-
-    [ExcludeFromCodeCoverage]
-    protected SitemapException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-    }
 }

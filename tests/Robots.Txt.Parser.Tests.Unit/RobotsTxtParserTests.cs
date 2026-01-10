@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -17,7 +18,7 @@ public partial class RobotsTxtParserTests
     public RobotsTxtParserTests()
     {
         _robotsClientMock = new Mock<IRobotClient>();
-        _parser = new RobotsTxtParser(_robotsClientMock.Object);
+        _parser = new RobotsTxtParser(_robotsClientMock.Object, new Uri("https://www.github.com"));
     }
 
     [Fact]

@@ -14,7 +14,7 @@ namespace Robots.Txt.Parser.Tests.Unit;
 public class SimpleTextSitemapParserTests
 {
     [Fact]
-    public async Task ReadAsStreamAsync_EmptyFile_ReturnEmptySitemap()
+    public async Task ReadFromStreamAsync_EmptyFile_ReturnEmptySitemap()
     {
         // Arrange
         var file = @"";
@@ -28,7 +28,7 @@ public class SimpleTextSitemapParserTests
     }
 
     [Fact]
-    public async Task ReadAsStreamAsync_InvalidFileStructure_ThrowSitemapException()
+    public async Task ReadFromStreamAsync_InvalidFileStructure_ThrowSitemapException()
     {
         // Arrange
         var file =
@@ -43,7 +43,7 @@ public class SimpleTextSitemapParserTests
     }
 
     [Fact]
-    public async Task ReadAsStreamAsync_Over50000Lines_ThrowSitemapException()
+    public async Task ReadFromStreamAsync_Over50000Lines_ThrowSitemapException()
     {
         // Arrange
         var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
@@ -57,7 +57,7 @@ public class SimpleTextSitemapParserTests
     }
 
     [Fact]
-    public async Task ReadAsStreamAsync_Exactly50000Lines_DoNotThrow()
+    public async Task ReadFromStreamAsync_Exactly50000Lines_DoNotThrow()
     {
         // Arrange
         var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
@@ -71,7 +71,7 @@ public class SimpleTextSitemapParserTests
     }
 
     [Fact]
-    public async Task ReadAsStreamAsync_Over50MiB_ThrowSitemapException()
+    public async Task ReadFromStreamAsync_Over50MiB_ThrowSitemapException()
     {
         // Arrange
         var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
@@ -85,7 +85,7 @@ public class SimpleTextSitemapParserTests
     }
 
     [Fact]
-    public async Task ReadAsStreamAsync_Exactly50MiB_DoNotThrow()
+    public async Task ReadFromStreamAsync_Exactly50MiB_DoNotThrow()
     {
         // Arrange
         var fileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
@@ -99,7 +99,7 @@ public class SimpleTextSitemapParserTests
     }
 
     [Fact]
-    public async Task ReadAsStreamAsync_ValidFile_ReturnSitemap()
+    public async Task ReadFromStreamAsync_ValidFile_ReturnSitemap()
     {
         // Arrange
         var file = @"https://github.com/organisations
@@ -118,7 +118,7 @@ https://github.com/people";
     }
 
     [Fact]
-    public async Task ReadAsStreamAsync_ValidFileWithWhitespaceLines_ReturnSitemap()
+    public async Task ReadFromStreamAsync_ValidFileWithWhitespaceLines_ReturnSitemap()
     {
         // Arrange
         var file = @"

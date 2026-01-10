@@ -14,6 +14,7 @@ namespace Robots.Txt.Parser;
 /// </summary>
 public class SitemapParser
 {
+    private const int MaxLines = 50000;
     private const int ByteCount50MiB = 52_428_800;
 
     private static readonly XNamespace sitemapNamespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
@@ -30,15 +31,26 @@ public class SitemapParser
     {
         try
         {
-            var reader = XmlReader.Create(stream, new XmlReaderSettings { Async = true });
+            /*
+              Each Sitemap file ... must be no larger than 50MB (52,428,800 bytes)
+            */
+            var maxLengthStream = new MaxLengthStream(stream, ByteCount50MiB);
+            var reader = XmlReader.Create(maxLengthStream, new XmlReaderSettings
+            {
+                Async = true,
+                DtdProcessing = DtdProcessing.Prohibit,
+                XmlResolver = null,
+                IgnoreComments = true,
+                IgnoreWhitespace = true
+            });
             await reader.MoveToContentAsync();
 
             return reader switch
             {
                 XmlReader when reader.NamespaceURI == sitemapNamespace && reader.Name == "urlset"
-                    => new Sitemap(ParseUrlSet(reader, () => stream.Position, modifiedSince, cancellationToken)),
+                    => new Sitemap(ParseUrlSet(reader, modifiedSince, cancellationToken)),
                 XmlReader when reader.NamespaceURI == sitemapNamespace && reader.Name == "sitemapindex"
-                    => new SitemapIndex(ParseSitemapIndex(reader, () => stream.Position, modifiedSince, cancellationToken)),
+                    => new SitemapIndex(ParseSitemapIndex(reader, modifiedSince, cancellationToken)),
                 _ => throw new SitemapException("Unable to find root sitemap element")
             };
         }
@@ -48,8 +60,10 @@ public class SitemapParser
         }
     }
 
-    private static async IAsyncEnumerable<Uri> ParseSitemapIndex(XmlReader reader, Func<long> getByteCount, DateTime? modifiedSince, [EnumeratorCancellation] CancellationToken cancellationToken)
+    private static async IAsyncEnumerable<Uri> ParseSitemapIndex(XmlReader reader, DateTime? modifiedSince, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        var lineCount = 0;
+
         try
         {
             await reader.ReadAsync();
@@ -72,7 +86,12 @@ public class SitemapParser
                     throw new SitemapException("Unable to parse sitemap item", e);
                 }
 
-                if (getByteCount() > ByteCount50MiB) throw new SitemapException("Reached parsing limit");
+                lineCount++;
+
+                /*
+                  Sitemap index files may not list more than 50,000 Sitemaps
+                */
+                if (lineCount > MaxLines) throw new SitemapException("Reached line limit");
 
                 Uri location;
                 try
@@ -96,8 +115,10 @@ public class SitemapParser
         }
     }
 
-    private static async IAsyncEnumerable<UrlSetItem> ParseUrlSet(XmlReader reader, Func<long> getByteCount, DateTime? modifiedSince, [EnumeratorCancellation] CancellationToken cancellationToken)
+    private static async IAsyncEnumerable<UrlSetItem> ParseUrlSet(XmlReader reader, DateTime? modifiedSince, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        var lineCount = 0;
+
         try
         {
             await reader.ReadAsync();
@@ -120,7 +141,12 @@ public class SitemapParser
                     throw new SitemapException("Unable to parse sitemap item", e);
                 }
 
-                if (getByteCount() > ByteCount50MiB) throw new SitemapException("Reached parsing limit");
+                lineCount++;
+
+                /*
+                  Each Sitemap file ... must have no more than 50,000 URLs
+                */
+                if (lineCount > MaxLines) throw new SitemapException("Reached line limit");
 
                 Uri location;
                 DateTime? lastModified;

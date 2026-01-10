@@ -41,7 +41,7 @@ Disallow: /
     }
 
     [Fact]
-    public async Task LoadSitemapAsync_MultipleSitemapDirectives_LoadMultipleUniqueSitemapDirectives()
+    public async Task LoadSitemapAsync_MultipleSitemapDirectivesTopOfFile_LoadMultipleUniqueSitemapDirectives()
     {
         // Arrange
         var file =
@@ -51,6 +51,38 @@ Sitemap: https://www.github.com/sitemap-2.xml
 User-agent: *
 Disallow: /
 ";
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
+
+        _robotsClientMock.Setup(callTo => callTo.LoadSitemapsAsync(It.IsAny<Uri>(), It.IsAny<DateTime?>(), It.IsAny<CancellationToken>()))
+                         .Returns(Enumerable.Empty<UrlSetItem>().ToAsyncEnumerable());
+
+        var robotsTxt = await _parser.ReadFromStreamAsync(stream);
+
+        // Act
+        await robotsTxt.LoadSitemapAsync().ToListAsync();
+
+        // Assert
+        robotsTxt.Should().NotBe(null);
+        _robotsClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
+            new Uri("https://www.github.com/sitemap.xml"),
+            null,
+            default), Times.Once);
+        _robotsClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
+            new Uri("https://www.github.com/sitemap-2.xml"),
+            null,
+            default), Times.Once);
+    }
+
+    [Fact]
+    public async Task LoadSitemapAsync_MultipleSitemapDirectivesUnderUserAgent_LoadMultipleUniqueSitemapDirectives()
+    {
+        // Arrange
+        var file =
+@"User-agent: *
+Disallow: /
+
+Sitemap: https://www.github.com/sitemap.xml
+Sitemap: https://www.github.com/sitemap-2.xml";
         await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
         _robotsClientMock.Setup(callTo => callTo.LoadSitemapsAsync(It.IsAny<Uri>(), It.IsAny<DateTime?>(), It.IsAny<CancellationToken>()))
@@ -173,8 +205,6 @@ Disallow: /
 ";
         await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
-        var baseAddress = new Uri("https://github.com");
-        _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(baseAddress);
         _robotsClientMock.Setup(callTo => callTo.LoadSitemapsAsync(It.IsAny<Uri>(), It.IsAny<DateTime?>(), It.IsAny<CancellationToken>()))
                          .Returns(Enumerable.Empty<UrlSetItem>().ToAsyncEnumerable());
 
@@ -186,7 +216,7 @@ Disallow: /
         // Assert
         robotsTxt.Should().NotBe(null);
         _robotsClientMock.Verify(callTo => callTo.LoadSitemapsAsync(
-            new Uri("https://github.com/sitemap.xml"),
+            new Uri("https://www.github.com/sitemap.xml"),
             null,
             default), Times.Once);
     }
@@ -201,7 +231,6 @@ Disallow: /
 ";
         await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
-        _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://github.com"));
         _robotsClientMock.Setup(callTo => callTo.LoadSitemapsAsync(It.IsAny<Uri>(), It.IsAny<DateTime?>(), It.IsAny<CancellationToken>()))
                          .Returns(Enumerable.Empty<UrlSetItem>().ToAsyncEnumerable());
 
@@ -230,7 +259,6 @@ Disallow: /
 ";
         await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file));
 
-        _robotsClientMock.Setup(callTo => callTo.BaseAddress).Returns(new Uri("https://github.com"));
         _robotsClientMock.Setup(callTo => callTo.LoadSitemapsAsync(It.IsAny<Uri>(), It.IsAny<DateTime?>(), It.IsAny<CancellationToken>()))
                          .Returns(Enumerable.Empty<UrlSetItem>().ToAsyncEnumerable());
 

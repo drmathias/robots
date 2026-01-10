@@ -49,6 +49,7 @@ public interface IRobotsTxt
 public class RobotsTxt : IRobotsTxt
 {
     private readonly IRobotClient _client;
+    private readonly Uri _baseUrl;
 
     private readonly IReadOnlyDictionary<ProductToken, HashSet<UrlRule>> _userAgentRules;
     private readonly IReadOnlyDictionary<ProductToken, int> _userAgentCrawlDirectives;
@@ -57,12 +58,14 @@ public class RobotsTxt : IRobotsTxt
     private readonly HashSet<Uri> _sitemapUrls;
 
     internal RobotsTxt(IRobotClient client,
+                       Uri baseUrl,
                        IReadOnlyDictionary<ProductToken, HashSet<UrlRule>> userAgentRules,
                        IReadOnlyDictionary<ProductToken, int> userAgentCrawlDirectives,
                        string? host,
                        HashSet<Uri> sitemapUrls)
     {
         _client = client;
+        _baseUrl = baseUrl;
         _userAgentRules = userAgentRules;
         _userAgentCrawlDirectives = userAgentCrawlDirectives;
         _userAgents = _userAgentRules.Keys.Concat(_userAgentCrawlDirectives.Keys).ToHashSet();
@@ -73,7 +76,7 @@ public class RobotsTxt : IRobotsTxt
     /// <inheritdoc />
     public async IAsyncEnumerable<UrlSetItem> LoadSitemapAsync(DateTime? modifiedSince = default, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var urls = _sitemapUrls.Count != 0 ? _sitemapUrls.AsEnumerable() : new[] { new Uri(_client.BaseAddress, "/sitemap.xml") };
+        var urls = _sitemapUrls.Count != 0 ? _sitemapUrls.AsEnumerable() : new[] { new Uri(_baseUrl, "/sitemap.xml") };
         foreach (var url in urls)
         {
             await foreach (var item in _client.LoadSitemapsAsync(url, modifiedSince, cancellationToken))
@@ -99,7 +102,7 @@ public class RobotsTxt : IRobotsTxt
     /// <inheritdoc />
     public bool TryGetHost(out string host)
     {
-        host = _host ?? _client.BaseAddress.Host;
+        host = _host ?? _baseUrl.Host;
         return _host is not null;
     }
 

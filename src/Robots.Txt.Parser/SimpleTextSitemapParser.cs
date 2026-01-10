@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Robots.Txt.Parser;
 
@@ -23,22 +24,23 @@ public static class SimpleTextSitemapParser
   /// <exception cref="SitemapException">Raised when there is an error parsing the Sitemap</exception>
   public static async IAsyncEnumerable<UrlSetItem> ReadFromStreamAsync(Stream stream, [EnumeratorCancellation] CancellationToken cancellationToken = default)
   {
-    using var streamReader = new StreamReader(stream);
+    /*
+      Each Sitemap file ... must be no larger than 50MB (52,428,800 bytes)
+    */
+    var maxLengthStream = new MaxLengthStream(stream, ByteCount50MiB);
+
+    using var streamReader = new StreamReader(maxLengthStream);
     string? line;
     var lineCount = 0;
-    while (((line = await streamReader.ReadLineAsync(cancellationToken)) is not null) && !cancellationToken.IsCancellationRequested)
+    while (((line = await ReadSitemapLine(streamReader, cancellationToken)) is not null) && !cancellationToken.IsCancellationRequested)
     {
-      /*
-        Each text file ... and must be no larger than 50MiB (52,428,800 bytes)
-      */
-      if (stream.Position > ByteCount50MiB) throw new SitemapException("Reached parsing limit");
 
       if (string.IsNullOrWhiteSpace(line)) continue;
 
       lineCount++;
 
       /*
-        Each text file can contain a maximum of 50,000 URLs
+        Each Sitemap file ... must have no more than 50,000 URLs
       */
       if (lineCount > MaxLines) throw new SitemapException("Reached line limit");
 
@@ -60,6 +62,18 @@ public static class SimpleTextSitemapParser
       }
 
       yield return new UrlSetItem(location, null, null, null);
+    }
+
+    static async Task<string?> ReadSitemapLine(StreamReader streamReader, CancellationToken cancellationToken)
+    {
+      try
+      {
+        return await streamReader.ReadLineAsync(cancellationToken);
+      }
+      catch (InvalidOperationException e)
+      {
+        throw new SitemapException("Unable to parse sitemap", e);
+      }
     }
   }
 }
