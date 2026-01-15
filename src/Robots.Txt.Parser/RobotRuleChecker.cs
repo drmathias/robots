@@ -20,18 +20,13 @@ public interface IRobotRuleChecker
 /// <summary>
 /// Provides the ability to check accessibility of URLs for a robot
 /// </summary>
-public class RobotRuleChecker : IRobotRuleChecker
+/// <remarks>
+/// Creates a rule checker with a specified set of rules
+/// </remarks>
+/// <param name="rules">A set of path rules</param>
+public class RobotRuleChecker(HashSet<UrlRule> rules) : IRobotRuleChecker
 {
-    private readonly HashSet<UrlRule> _rules;
-
-    /// <summary>
-    /// Creates a rule checker with a specified set of rules
-    /// </summary>
-    /// <param name="rules">A set of path rules</param>
-    public RobotRuleChecker(HashSet<UrlRule> rules)
-    {
-        _rules = rules;
-    }
+    private readonly HashSet<UrlRule> _rules = rules;
 
     /// <inheritdoc />
     public bool IsAllowed(string path)
