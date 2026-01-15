@@ -115,9 +115,12 @@ public void ConfigureServices(IServiceCollection services)
 ### Without Dependency Injection
 
 ```csharp
-var httpClientHandler = new HttpClientHandler
+var httpClientHandler = new ResponsibleCrawlerHttpClientHandler()
 {
-    InnerHandler = new ResponsibleCrawlerHttpClientHandler()
+    InnerHandler = new HttpClientHandler
+    {
+        AutomaticDecompression = DecompressionMethods.All
+    }
 };
 using var httpClient = new HttpClient(httpClientHandler);
 var robotWebClient = new RobotWebClient(httpClient);
