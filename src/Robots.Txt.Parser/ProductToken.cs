@@ -85,4 +85,7 @@ public partial class ProductToken : IEquatable<string>, IEquatable<ProductToken>
 
     /// <inheritdoc />
     public override int GetHashCode() => _value.ToUpperInvariant().GetHashCode();
+
+    /// <inheritdoc />
+    public override string ToString() => _value;
 }
