@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ Crawl-delay: 10
         // Assert
         robotsTxt.Should().NotBe(null);
         robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(false);
-        crawlDelay.Should().Be(0);
+        crawlDelay.Should().Be(TimeSpan.Zero);
     }
 
     [Fact]
@@ -43,7 +44,7 @@ Disallow:
         // Assert
         robotsTxt.Should().NotBe(null);
         robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(false);
-        crawlDelay.Should().Be(0);
+        crawlDelay.Should().Be(TimeSpan.Zero);
     }
 
     [Fact]
@@ -62,7 +63,7 @@ Crawl-delay: 10
         // Assert
         robotsTxt.Should().NotBe(null);
         robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(true);
-        crawlDelay.Should().Be(10);
+        crawlDelay.Should().Be(TimeSpan.FromSeconds(10));
     }
 
     [Fact]
@@ -81,7 +82,7 @@ crawl-delay: 10
         // Assert
         robotsTxt.Should().NotBe(null);
         robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(true);
-        crawlDelay.Should().Be(10);
+        crawlDelay.Should().Be(TimeSpan.FromSeconds(10));
     }
 
     [Fact]
@@ -103,7 +104,7 @@ Disallow: /some/path
         // Assert
         robotsTxt.Should().NotBe(null);
         robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(false);
-        crawlDelay.Should().Be(0);
+        crawlDelay.Should().Be(TimeSpan.Zero);
     }
 
     [Fact]
@@ -125,7 +126,7 @@ Crawl-delay: 5
         // Assert
         robotsTxt.Should().NotBe(null);
         robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(true);
-        crawlDelay.Should().Be(5);
+        crawlDelay.Should().Be(TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -148,7 +149,7 @@ Disallow: /some/path
         // Assert
         robotsTxt.Should().NotBe(null);
         robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(false);
-        crawlDelay.Should().Be(0);
+        crawlDelay.Should().Be(TimeSpan.Zero);
     }
 
     [Fact]
@@ -171,7 +172,7 @@ Crawl-delay: 5
         // Assert
         robotsTxt.Should().NotBe(null);
         robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(true);
-        crawlDelay.Should().Be(5);
+        crawlDelay.Should().Be(TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -196,6 +197,6 @@ Crawl-delay: 5
         // Assert
         robotsTxt.Should().NotBe(null);
         robotsTxt.TryGetCrawlDelay(ProductToken.Parse("SomeBot"), out var crawlDelay).Should().Be(true);
-        crawlDelay.Should().Be(15);
+        crawlDelay.Should().Be(TimeSpan.FromSeconds(15));
     }
 }

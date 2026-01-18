@@ -49,7 +49,7 @@ public class RobotsTxtParser(IRobotClient robotClient, Uri baseUrl)
         */
         var currentUserAgents = new HashSet<ProductToken>();
         var userAgentRules = new Dictionary<ProductToken, HashSet<UrlRule>>();
-        var userAgentCrawlDirectives = new Dictionary<ProductToken, int>();
+        var userAgentCrawlDirectives = new Dictionary<ProductToken, TimeSpan>();
 
         try
         {
@@ -107,7 +107,7 @@ public class RobotsTxtParser(IRobotClient robotClient, Uri baseUrl)
                         var crawlDelayValue = GetValueOfDirective(line, CrawlDelayDirective);
                         if (int.TryParse(crawlDelayValue, out var parsedCrawlDelay))
                         {
-                            foreach (var userAgent in currentUserAgents) userAgentCrawlDirectives.TryAdd(userAgent, parsedCrawlDelay);
+                            foreach (var userAgent in currentUserAgents) userAgentCrawlDirectives.TryAdd(userAgent, TimeSpan.FromSeconds(parsedCrawlDelay));
                         }
                     }
                 }

@@ -23,9 +23,9 @@ public interface IRobotsTxt
     /// Retrieves the crawl delay specified for a User-Agent
     /// </summary>
     /// <param name="userAgent">User-Agent header to retrieve rules for</param>
-    /// <param name="crawlDelay">The crawl delay in seconds</param>
+    /// <param name="crawlDelay">The crawl delay duration if the directive was found; otherwise, <see cref="TimeSpan.Zero"/></param>
     /// <returns>True if a crawl delay directive exists; otherwise false</returns>
-    bool TryGetCrawlDelay(ProductToken userAgent, out int crawlDelay);
+    bool TryGetCrawlDelay(ProductToken userAgent, out TimeSpan crawlDelay);
 
     /// <summary>
     /// Retrieves the website host
@@ -52,7 +52,7 @@ public class RobotsTxt : IRobotsTxt
     private readonly Uri _baseUrl;
 
     private readonly IReadOnlyDictionary<ProductToken, HashSet<UrlRule>> _userAgentRules;
-    private readonly IReadOnlyDictionary<ProductToken, int> _userAgentCrawlDirectives;
+    private readonly IReadOnlyDictionary<ProductToken, TimeSpan> _userAgentCrawlDirectives;
     private readonly HashSet<ProductToken> _userAgents;
     private readonly string? _host;
     private readonly HashSet<Uri> _sitemapUrls;
@@ -60,7 +60,7 @@ public class RobotsTxt : IRobotsTxt
     internal RobotsTxt(IRobotClient client,
                        Uri baseUrl,
                        IReadOnlyDictionary<ProductToken, HashSet<UrlRule>> userAgentRules,
-                       IReadOnlyDictionary<ProductToken, int> userAgentCrawlDirectives,
+                       IReadOnlyDictionary<ProductToken, TimeSpan> userAgentCrawlDirectives,
                        string? host,
                        HashSet<Uri> sitemapUrls)
     {
@@ -87,7 +87,7 @@ public class RobotsTxt : IRobotsTxt
     }
 
     /// <inheritdoc />
-    public bool TryGetCrawlDelay(ProductToken userAgent, out int crawlDelay)
+    public bool TryGetCrawlDelay(ProductToken userAgent, out TimeSpan crawlDelay)
     {
         var userAgentMatch = _userAgentCrawlDirectives.TryGetValue(userAgent, out crawlDelay);
         if (!userAgentMatch)
