@@ -14,10 +14,11 @@ public interface IRobotsTxt
     /// <summary>
     /// Retrieves the sitemap
     /// </summary>
-    /// <param name="modifiedSince">Filter to retrieve site maps modified after this date</param>
+    /// <param name="modifiedSince">Filter to retrieve sitemaps modified after this date</param>
+    /// <param name="sitemapLocationFilter">Predicate to decide whether to retrieve sitemap based on location</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>A sitemap, or null or no sitemap is found</returns>
-    IAsyncEnumerable<UrlSetItem> LoadSitemapAsync(DateTime? modifiedSince = default, CancellationToken cancellationToken = default);
+    IAsyncEnumerable<UrlSetItem> LoadSitemapAsync(DateTime? modifiedSince = default, Func<Uri, bool>? sitemapLocationFilter = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves the crawl delay specified for a User-Agent
@@ -74,12 +75,13 @@ public class RobotsTxt : IRobotsTxt
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<UrlSetItem> LoadSitemapAsync(DateTime? modifiedSince = default, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<UrlSetItem> LoadSitemapAsync(DateTime? modifiedSince = default, Func<Uri, bool>? sitemapLocationFilter = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var urls = _sitemapUrls.Count != 0 ? _sitemapUrls.AsEnumerable() : [new Uri(_baseUrl, "/sitemap.xml")];
         foreach (var url in urls)
         {
-            await foreach (var item in _client.LoadSitemapsAsync(url, modifiedSince, cancellationToken))
+            if (sitemapLocationFilter is not null && !sitemapLocationFilter.Invoke(url)) continue;
+            await foreach (var item in _client.LoadSitemapsAsync(url, modifiedSince, sitemapLocationFilter, cancellationToken))
             {
                 yield return item;
             }

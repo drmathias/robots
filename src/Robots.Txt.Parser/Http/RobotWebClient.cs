@@ -62,7 +62,7 @@ public class RobotWebClient : IRobotClient
         return await new RobotsTxtParser(this, baseUrl).ReadFromStreamAsync(stream, cancellationToken);
     }
 
-    async IAsyncEnumerable<UrlSetItem> IRobotClient.LoadSitemapsAsync(Uri uri, DateTime? modifiedSince, [EnumeratorCancellation] CancellationToken cancellationToken)
+    async IAsyncEnumerable<UrlSetItem> IRobotClient.LoadSitemapsAsync(Uri uri, DateTime? modifiedSince, Func<Uri, bool>? sitemapLocationFilter, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, uri);
         request.Headers.Add("Accept", "application/xml,text/plain,text/xml,*/*");
@@ -86,7 +86,8 @@ public class RobotWebClient : IRobotClient
                 {
                     await foreach (var location in index.SitemapUris)
                     {
-                        await foreach (var item in (this as IRobotClient).LoadSitemapsAsync(location, modifiedSince, cancellationToken))
+                        if (sitemapLocationFilter is not null && !sitemapLocationFilter.Invoke(location)) continue;
+                        await foreach (var item in (this as IRobotClient).LoadSitemapsAsync(location, modifiedSince, sitemapLocationFilter, cancellationToken))
                         {
                             yield return item;
                         }
