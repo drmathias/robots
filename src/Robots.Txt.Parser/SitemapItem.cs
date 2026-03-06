@@ -56,7 +56,7 @@ public enum ChangeFrequency
     /// <summary>
     /// Hints that a document is expected to change hourly
     /// </summary>
-    /// Hourly = 1,
+    Hourly = 1,
     /// <summary>
     /// Hints that a document is expected to change daily
     /// </summary>
