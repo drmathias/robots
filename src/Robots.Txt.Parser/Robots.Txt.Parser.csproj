@@ -9,8 +9,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>Robots.Txt;Sitemap;Scraper;Crawler;Spider</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/drmathias/Robots.Txt.Parser</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/drmathias/Robots.Txt.Parser</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/drmathias/robots</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/drmathias/robots</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryBranch>main</RepositoryBranch>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
